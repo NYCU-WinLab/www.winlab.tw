@@ -56,7 +56,7 @@ export function About() {
         initial={{ opacity: 0, y: 16 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ ...spring, delay: 0.4 }}
-        className="text-muted-foreground whitespace-nowrap text-base"
+        className="text-muted-foreground text-center text-base"
       >
         A systems lab that builds things that actually work.
       </motion.p>
