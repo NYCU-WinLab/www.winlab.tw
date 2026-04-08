@@ -1,19 +1,53 @@
-import { Button } from "@/components/ui/button"
+"use client"
+
+import { Loader2 } from "lucide-react"
+import { motion } from "motion/react"
+
+import { useInView } from "@/hooks/use-in-view"
+import { About } from "@/components/about"
+import { FindUs } from "@/components/find-us"
+import { Hero } from "@/components/hero"
+import { Professor } from "@/components/professor"
+import { UserGrid } from "@/components/users/user-grid"
+import { useUsers } from "@/hooks/use-users"
 
 export default function Page() {
+  const { users, isLoading, error } = useUsers()
+  const { ref: membersRef, inView: membersInView } = useInView()
+
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
-        </div>
-        <div className="font-mono text-xs text-muted-foreground">
-          (Press <kbd>d</kbd> to toggle dark mode)
-        </div>
+    <>
+      <Hero />
+
+      <About />
+
+      <Professor />
+
+      <div className="mx-auto max-w-5xl p-6 pb-24">
+        <motion.h1
+          ref={membersRef as React.RefObject<HTMLHeadingElement>}
+          initial={{ opacity: 0, y: 16 }}
+          animate={membersInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ type: "spring", stiffness: 200, damping: 20 }}
+          className="mb-8 text-center text-3xl font-medium"
+        >
+          Members
+        </motion.h1>
+
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="text-muted-foreground size-5 animate-spin" />
+          </div>
+        ) : error ? (
+          <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">
+            {error}
+          </div>
+        ) : (
+          <UserGrid users={users} />
+        )}
       </div>
-    </div>
+
+      <FindUs />
+    </>
   )
 }

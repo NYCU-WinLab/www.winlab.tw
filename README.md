@@ -1,21 +1,42 @@
-# Next.js template
+```
+██╗    ██╗██╗███╗   ██╗██╗      █████╗ ██████╗ 
+██║    ██║██║████╗  ██║██║     ██╔══██╗██╔══██╗
+██║ █╗ ██║██║██╔██╗ ██║██║     ███████║██████╔╝
+██║███╗██║██║██║╚██╗██║██║     ██╔══██║██╔══██╗
+╚███╔███╔╝██║██║ ╚████║███████╗██║  ██║██████╔╝
+ ╚══╝╚══╝ ╚═╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝╚═════╝
+```
 
-This is a Next.js template with shadcn/ui.
+# www.winlab.tw
 
-## Adding components
+We deploy on Fridays. The official website of Wireless Internet Laboratory, NYCU.
 
-To add components to your app, run the following command:
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router, Turbopack)
+- **Auth**: Keycloak Admin API
+- **Styling**: Tailwind CSS v4 + shadcn/ui
+- **Animation**: Motion (Framer Motion)
+- **Package Manager**: Bun
+
+## Getting Started
 
 ```bash
-npx shadcn@latest add button
+bun install
+bun dev
 ```
 
-This will place the ui components in the `components` directory.
+## Environment Variables
 
-## Using components
+Create a `.env.local` file:
 
-To use the components in your app, import them as follows:
-
-```tsx
-import { Button } from "@/components/ui/button";
 ```
+KEYCLOAK_URL=https://auth.winlab.tw
+KEYCLOAK_REALM=winlab
+KEYCLOAK_ADMIN_CLIENT_ID=your-client-id
+KEYCLOAK_ADMIN_CLIENT_SECRET=your-secret
+```
+
+## License
+
+[MIT](LICENSE.md) — deploy responsibly, even on Fridays.
