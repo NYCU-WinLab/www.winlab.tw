@@ -2,17 +2,22 @@
 
 import { useCallback, useEffect, useState } from "react"
 
-import type { KeycloakUser } from "@/lib/services/users"
+export type PublicUser = {
+  id: string
+  displayName: string
+  gravatarUrl: string
+  admissionYear?: string
+}
 
 type UseUsersReturn = {
-  users: KeycloakUser[]
+  users: PublicUser[]
   isLoading: boolean
   error: string | null
   refetch: () => void
 }
 
 export function useUsers(): UseUsersReturn {
-  const [users, setUsers] = useState<KeycloakUser[]>([])
+  const [users, setUsers] = useState<PublicUser[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -28,7 +33,7 @@ export function useUsers(): UseUsersReturn {
         throw new Error(body.error ?? `${res.status} ${res.statusText}`)
       }
 
-      const data: KeycloakUser[] = await res.json()
+      const data: PublicUser[] = await res.json()
       setUsers(data)
     } catch (err) {
       setError(err instanceof Error ? err.message : "something went wrong")

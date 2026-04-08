@@ -32,12 +32,10 @@ const chars: CharData[] = (
 const ROWS = heroData.rows as number
 const COLS = heroData.cols as number
 
-// glitch state: char index → { char, expires }
-const glitchMap = new Map<number, { ch: string; expires: number }>()
-
 export function Hero() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const mouseRef = useRef({ x: -9999, y: -9999 })
+  const glitchMapRef = useRef(new Map<number, { ch: string; expires: number }>())
   const { resolvedTheme } = useTheme()
   const themeRef = useRef(resolvedTheme)
   const rafRef = useRef<number>(0)
@@ -121,15 +119,15 @@ export function Hero() {
       let ch = CHARSET[newDensity]
 
       // glitch: trigger rarely, hold for ~0.5s
-      const existing = glitchMap.get(i)
+      const existing = glitchMapRef.current.get(i)
       if (existing && now < existing.expires) {
         ch = existing.ch
       } else if (Math.random() < 0.00005) {
         const glitchCh = CHARSET[Math.floor(Math.random() * CHARSET.length)]
-        glitchMap.set(i, { ch: glitchCh, expires: now + 0.3 + Math.random() * 0.4 })
+        glitchMapRef.current.set(i, { ch: glitchCh, expires: now + 0.3 + Math.random() * 0.4 })
         ch = glitchCh
       } else if (existing) {
-        glitchMap.delete(i)
+        glitchMapRef.current.delete(i)
       }
 
       // color — both themes use blue/purple tones

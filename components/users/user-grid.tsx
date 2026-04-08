@@ -5,17 +5,17 @@ import { motion } from "motion/react"
 import { useInView } from "@/hooks/use-in-view"
 import { UserCard } from "@/components/users/user-card"
 
-import type { KeycloakUser } from "@/lib/services/users"
+import type { PublicUser } from "@/hooks/use-users"
 
 const spring = { type: "spring" as const, stiffness: 200, damping: 20 }
 
-type YearGroup = { year: string; users: KeycloakUser[] }
+type YearGroup = { year: string; users: PublicUser[] }
 
-function groupByYear(users: KeycloakUser[]): YearGroup[] {
-  const map = new Map<string, KeycloakUser[]>()
+function groupByYear(users: PublicUser[]): YearGroup[] {
+  const map = new Map<string, PublicUser[]>()
 
   for (const user of users) {
-    const year = user.attributes.admissionYear
+    const year = user.admissionYear
     if (!year) continue
     const group = map.get(year) ?? []
     group.push(user)
@@ -56,7 +56,7 @@ function YearSection({ year, users }: YearGroup) {
   )
 }
 
-export function UserGrid({ users }: { users: KeycloakUser[] }) {
+export function UserGrid({ users }: { users: PublicUser[] }) {
   const groups = groupByYear(users)
 
   if (groups.length === 0) {

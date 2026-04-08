@@ -2,27 +2,28 @@ import KcAdminClient from "@keycloak/keycloak-admin-client"
 
 let client: KcAdminClient | null = null
 let tokenExpiresAt = 0
+let inflight: Promise<KcAdminClient> | null = null
 
 export async function getKeycloakAdmin() {
-  const now = Date.now()
+  if (client && Date.now() < tokenExpiresAt) return client
+  if (inflight) return inflight
 
-  if (client && now < tokenExpiresAt) {
+  inflight = (async () => {
+    client = new KcAdminClient({
+      baseUrl: process.env.KEYCLOAK_URL!,
+      realmName: process.env.KEYCLOAK_REALM!,
+    })
+
+    await client.auth({
+      grantType: "client_credentials",
+      clientId: process.env.KEYCLOAK_ADMIN_CLIENT_ID!,
+      clientSecret: process.env.KEYCLOAK_ADMIN_CLIENT_SECRET!,
+    })
+
+    tokenExpiresAt = Date.now() + 4 * 60 * 1000
+    inflight = null
     return client
-  }
+  })()
 
-  client = new KcAdminClient({
-    baseUrl: process.env.KEYCLOAK_URL!,
-    realmName: process.env.KEYCLOAK_REALM!,
-  })
-
-  await client.auth({
-    grantType: "client_credentials",
-    clientId: process.env.KEYCLOAK_ADMIN_CLIENT_ID!,
-    clientSecret: process.env.KEYCLOAK_ADMIN_CLIENT_SECRET!,
-  })
-
-  // refresh 5 min before expiry — or every 4 min if we can't tell
-  tokenExpiresAt = now + 4 * 60 * 1000
-
-  return client
+  return inflight
 }
