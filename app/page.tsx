@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { Loader2 } from "lucide-react"
 import { motion } from "motion/react"
 
@@ -44,6 +45,25 @@ export default function Page() {
           </div>
         ) : (
           <UserGrid users={users} />
+        )}
+
+        {!isLoading && !error && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={membersInView ? { opacity: 1 } : {}}
+            transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.4 }}
+            className="mt-10 flex justify-center"
+          >
+            <Link
+              href="/directory"
+              className="group flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <span className="transition-transform duration-150 group-hover:translate-x-0.5">
+                →
+              </span>
+              <span>full directory</span>
+            </Link>
+          </motion.div>
         )}
       </div>
 
