@@ -6,6 +6,7 @@ import { Footer } from "@/components/footer"
 import { JsonLd } from "@/components/json-ld"
 import { Header } from "@/components/header"
 import { Uptime } from "@/components/uptime"
+import { PageTransition } from "@/components/page-transition"
 import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
 
@@ -75,7 +76,7 @@ export default function RootLayout({
         <ThemeProvider>
           <TooltipProvider>
             <Header />
-            {children}
+            <PageTransition>{children}</PageTransition>
             <Uptime />
             <Footer />
           </TooltipProvider>
