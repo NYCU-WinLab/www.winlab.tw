@@ -1,12 +1,9 @@
 import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
-import { getSupabaseConfig } from "@/lib/supabase/config"
+import { requireSupabaseConfig } from "@/lib/supabase/config"
 
 export const createClient = async () => {
-  const config = getSupabaseConfig()
-  if (!config) {
-    throw new Error("Supabase auth is not configured")
-  }
+  const config = requireSupabaseConfig()
 
   const cookieStore = await cookies()
 

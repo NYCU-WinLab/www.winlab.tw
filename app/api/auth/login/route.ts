@@ -1,4 +1,4 @@
-import { getSupabaseConfig } from "@/lib/supabase/config"
+import { hasSupabaseConfig, requireSupabaseConfig } from "@/lib/supabase/config"
 import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
 
@@ -11,11 +11,10 @@ export async function GET(request: Request) {
       ? rawNext
       : "/directory"
 
-  const config = getSupabaseConfig()
-
-  if (!config) {
+  if (!hasSupabaseConfig()) {
     return NextResponse.redirect(`${origin}/login?next=${encodeURIComponent(next)}&error=auth_unavailable`)
   }
+  const config = requireSupabaseConfig()
 
   const supabase = createClient(
     config.url,

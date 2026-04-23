@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "verify:auth": "node scripts/verify-auth-redirect.mjs"
   },
   "dependencies": {
     "@keycloak/keycloak-admin-client": "^26.5.7",
