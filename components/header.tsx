@@ -20,7 +20,7 @@ export function Header() {
   }, [])
 
   return (
-    <header className="fixed top-0 left-0 z-50 flex w-full items-center justify-between p-6">
+    <header className="fixed top-0 left-0 z-50 flex w-full items-center justify-between bg-background/70 px-4 py-3 backdrop-blur-md sm:px-6 sm:py-4">
       <Tooltip>
         <TooltipTrigger asChild>
           <motion.div

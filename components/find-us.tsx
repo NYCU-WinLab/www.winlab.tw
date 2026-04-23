@@ -12,7 +12,7 @@ export function FindUs() {
   return (
     <section
       ref={ref as React.RefObject<HTMLElement>}
-      className="flex h-dvh flex-col items-center justify-center gap-8 px-6 text-center"
+      className="flex min-h-dvh flex-col items-center justify-center gap-6 px-6 py-16 text-center sm:gap-8 sm:py-0"
     >
       <motion.h2
         initial={{ opacity: 0, y: 16 }}

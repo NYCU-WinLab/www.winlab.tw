@@ -47,10 +47,10 @@ export function Professor() {
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ ...spring, delay: 0.1 }}
           >
-            <h2 className="text-2xl font-medium sm:text-4xl">
+            <h2 className="text-center text-2xl font-medium sm:text-4xl md:text-left">
               Chien-Chao Tseng
             </h2>
-            <p className="mt-2 text-base text-muted-foreground">
+            <p className="mt-2 text-center text-base text-muted-foreground md:text-left">
               曾建超 — Distinguished Professor, NYCU
             </p>
           </motion.div>
@@ -73,7 +73,7 @@ export function Professor() {
             initial={{ opacity: 0, y: 16 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ ...spring, delay: 0.5 }}
-            className="flex flex-col gap-2 text-sm text-muted-foreground"
+            className="flex flex-col items-center gap-2 text-sm text-muted-foreground md:items-start"
           >
             <a
               href="mailto:cctseng@cs.nycu.edu.tw"
