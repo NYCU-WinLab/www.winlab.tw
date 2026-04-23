@@ -29,14 +29,19 @@ export function Uptime() {
   const elapsed = Date.now() - ORIGIN
 
   return (
-    <div className="fixed bottom-0 left-0 z-50 px-4 py-3 sm:p-6">
+    <div className="fixed bottom-0 left-0 z-50 hidden px-4 py-3 sm:block sm:p-6">
       <Tooltip>
         <TooltipTrigger asChild>
           <motion.span
             initial={{ opacity: 0, x: -16 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.4 }}
-            className="text-muted-foreground cursor-default text-xs tabular-nums"
+            transition={{
+              type: "spring",
+              stiffness: 200,
+              damping: 20,
+              delay: 0.4,
+            }}
+            className="cursor-default text-xs text-muted-foreground tabular-nums"
           >
             uptime: {formatDays(elapsed)}
           </motion.span>
