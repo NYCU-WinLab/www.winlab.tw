@@ -30,7 +30,7 @@ export type DirectoryMember = {
   email: string
   phone?: string
   role: MemberRole
-  title?: string
+  position?: string
   gravatarUrl: string
   github?: string
   office?: string
@@ -115,7 +115,7 @@ export async function getDirectoryMembers(): Promise<DirectoryMember[]> {
         email: u.email ?? "",
         phone: attrs.phone?.[0],
         role: (attrs.role?.[0] as MemberRole) ?? "pending",
-        title: attrs.title?.[0],
+        position: attrs.position?.[0],
         gravatarUrl: gravatarUrl(u.email),
         github: attrs.github?.[0],
         office: attrs.office?.[0],
