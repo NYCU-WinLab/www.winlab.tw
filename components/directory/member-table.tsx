@@ -99,7 +99,7 @@ function MemberRow({ member }: { member: DirectoryMember }) {
           variant={roleBadgeVariant(member.role)}
           className="whitespace-nowrap"
         >
-          {member.title ?? ROLE_LABELS[member.role]}
+          {member.position ?? ROLE_LABELS[member.role]}
         </Badge>
       </td>
 
@@ -198,7 +198,7 @@ export function MemberTable({ members }: MemberTableProps) {
           matches(m.email, q) ||
           matches(m.phone, q) ||
           matches(m.office, q) ||
-          matches(m.title, q) ||
+          matches(m.position, q) ||
           m.researchAreas.some((a) => a.toLowerCase().includes(q))
         )
       })
@@ -217,7 +217,7 @@ export function MemberTable({ members }: MemberTableProps) {
   ) => {
     const byYear = new Map<number, DirectoryMember[]>()
     for (const m of groupMembers) {
-      const y = getYearFromTitle(m.title)
+      const y = getYearFromTitle(m.position)
       if (!byYear.has(y)) byYear.set(y, [])
       byYear.get(y)!.push(m)
     }
