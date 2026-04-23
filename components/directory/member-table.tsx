@@ -297,7 +297,9 @@ export function MemberTable({ members }: MemberTableProps) {
 
       {/* Scroll hint — mobile only, above table */}
       <div className="flex items-center justify-end sm:hidden">
-        <span className="text-xs text-muted-foreground/40">← 左右滑動查看更多</span>
+        <span className="text-xs text-muted-foreground/40">
+          ← 左右滑動查看更多
+        </span>
       </div>
 
       {/* Table */}
