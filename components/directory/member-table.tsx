@@ -298,85 +298,85 @@ export function MemberTable({ members }: MemberTableProps) {
       {/* Table */}
       <div className="overflow-hidden rounded-lg border border-border/60">
         <div className="overflow-x-auto">
-        <table className="w-full min-w-[520px] text-left">
-          <thead>
-            <tr className="border-b border-border/60 bg-muted/30">
-              <th className="py-2.5 pr-3 pl-4 text-xs font-medium text-muted-foreground">
-                姓名
-              </th>
-              <th className="px-3 py-2.5 text-xs font-medium text-muted-foreground">
-                身份
-              </th>
-              <th className="px-3 py-2.5 text-xs font-medium text-muted-foreground">
-                Email
-              </th>
-              <th className="hidden px-3 py-2.5 text-xs font-medium text-muted-foreground sm:table-cell">
-                電話
-              </th>
-              <th className="hidden px-3 py-2.5 pr-4 text-xs font-medium text-muted-foreground md:table-cell">
-                工號/學號
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={99}
-                  className="py-16 text-center text-sm text-muted-foreground"
-                >
-                  {query ? `找不到「${query}」相關的成員` : "尚無成員資料"}
-                </td>
+          <table className="w-full min-w-[520px] text-left">
+            <thead>
+              <tr className="border-b border-border/60 bg-muted/30">
+                <th className="py-2.5 pr-3 pl-4 text-xs font-medium text-muted-foreground">
+                  姓名
+                </th>
+                <th className="px-3 py-2.5 text-xs font-medium text-muted-foreground">
+                  身份
+                </th>
+                <th className="px-3 py-2.5 text-xs font-medium text-muted-foreground">
+                  Email
+                </th>
+                <th className="hidden px-3 py-2.5 text-xs font-medium text-muted-foreground sm:table-cell">
+                  電話
+                </th>
+                <th className="hidden px-3 py-2.5 pr-4 text-xs font-medium text-muted-foreground md:table-cell">
+                  工號/學號
+                </th>
               </tr>
-            ) : selectedRole !== ALL_ROLES ? (
-              selectedRole === "master" ? (
-                renderYearRows(filtered, "master", "碩")
-              ) : selectedRole === "phd" ? (
-                renderYearRows(filtered, "phd", "博")
-              ) : (
-                filtered.map((m) => <MemberRow key={m.id} member={m} />)
-              )
-            ) : (
-              ROLE_ORDER.map((role) => {
-                const group = filtered.filter((m) => m.role === role)
-                if (group.length === 0) return null
-                const isCollapsed = collapsed.has(role)
-                return (
-                  <React.Fragment key={role}>
-                    <tr
-                      className="cursor-pointer border-b border-border/50 transition-colors select-none hover:bg-muted/30"
-                      onClick={() => toggle(role)}
-                    >
-                      <td colSpan={99} className="bg-muted/20 px-4 py-1.5">
-                        <div className="flex items-center gap-2">
-                          <ChevronRight
-                            className={`h-3.5 w-3.5 text-muted-foreground/60 transition-transform duration-150 ${
-                              isCollapsed ? "" : "rotate-90"
-                            }`}
-                          />
-                          <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                            {ROLE_LABELS[role]}
-                          </span>
-                          <span className="text-xs text-muted-foreground/60">
-                            {group.length}
-                          </span>
-                        </div>
-                      </td>
-                    </tr>
-                    {!isCollapsed &&
-                      (role === "master"
-                        ? renderYearRows(group, "master", "碩")
-                        : role === "phd"
-                          ? renderYearRows(group, "phd", "博")
-                          : group.map((m) => (
-                              <MemberRow key={m.id} member={m} />
-                            )))}
-                  </React.Fragment>
+            </thead>
+            <tbody>
+              {filtered.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={99}
+                    className="py-16 text-center text-sm text-muted-foreground"
+                  >
+                    {query ? `找不到「${query}」相關的成員` : "尚無成員資料"}
+                  </td>
+                </tr>
+              ) : selectedRole !== ALL_ROLES ? (
+                selectedRole === "master" ? (
+                  renderYearRows(filtered, "master", "碩")
+                ) : selectedRole === "phd" ? (
+                  renderYearRows(filtered, "phd", "博")
+                ) : (
+                  filtered.map((m) => <MemberRow key={m.id} member={m} />)
                 )
-              })
-            )}
-          </tbody>
-        </table>
+              ) : (
+                ROLE_ORDER.map((role) => {
+                  const group = filtered.filter((m) => m.role === role)
+                  if (group.length === 0) return null
+                  const isCollapsed = collapsed.has(role)
+                  return (
+                    <React.Fragment key={role}>
+                      <tr
+                        className="cursor-pointer border-b border-border/50 transition-colors select-none hover:bg-muted/30"
+                        onClick={() => toggle(role)}
+                      >
+                        <td colSpan={99} className="bg-muted/20 px-4 py-1.5">
+                          <div className="flex items-center gap-2">
+                            <ChevronRight
+                              className={`h-3.5 w-3.5 text-muted-foreground/60 transition-transform duration-150 ${
+                                isCollapsed ? "" : "rotate-90"
+                              }`}
+                            />
+                            <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                              {ROLE_LABELS[role]}
+                            </span>
+                            <span className="text-xs text-muted-foreground/60">
+                              {group.length}
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
+                      {!isCollapsed &&
+                        (role === "master"
+                          ? renderYearRows(group, "master", "碩")
+                          : role === "phd"
+                            ? renderYearRows(group, "phd", "博")
+                            : group.map((m) => (
+                                <MemberRow key={m.id} member={m} />
+                              )))}
+                    </React.Fragment>
+                  )
+                })
+              )}
+            </tbody>
+          </table>
         </div>
 
         {filtered.length > 0 && (
