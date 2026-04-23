@@ -1,7 +1,6 @@
 import { getDirectoryMembers } from "@/lib/services/users"
 import { MemberTable } from "@/components/directory/member-table"
 import { createClient } from "@/lib/supabase/server"
-import { hasSupabaseConfig } from "@/lib/supabase/config"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
@@ -13,16 +12,17 @@ export const metadata = {
 }
 
 export default async function DirectoryPage() {
-  const authEnabled = hasSupabaseConfig()
   let user = null
 
-  if (authEnabled) {
+  try {
     const supabase = await createClient()
     const {
       data: { user: currentUser },
     } = await supabase.auth.getUser()
 
     user = currentUser
+  } catch {
+    user = null
   }
 
   if (!user) {
@@ -36,20 +36,12 @@ export default async function DirectoryPage() {
             請先登入後查看通訊錄
           </h1>
           <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
-            {authEnabled
-              ? "這裡只提供實驗室成員使用。登入後才會載入成員名單與聯絡資訊。"
-              : "目前登入服務尚未完成設定，所以暫時無法載入通訊錄。"}
+            這裡只提供實驗室成員使用。登入後才會載入成員名單與聯絡資訊。
           </p>
           <div className="mt-8 flex justify-center">
-            {authEnabled ? (
-              <Button asChild size="lg">
-                <Link href="/login?next=/directory">前往登入</Link>
-              </Button>
-            ) : (
-              <Button size="lg" disabled>
-                登入暫時不可用
-              </Button>
-            )}
+            <Button asChild size="lg">
+              <Link href="/login?next=/directory">前往登入</Link>
+            </Button>
           </div>
         </section>
       </main>
