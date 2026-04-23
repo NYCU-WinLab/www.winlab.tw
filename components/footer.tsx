@@ -10,7 +10,7 @@ import {
 
 export function Footer() {
   return (
-    <footer className="fixed right-0 bottom-0 z-50 p-6">
+    <footer className="fixed right-0 bottom-0 z-50 px-4 py-3 sm:p-6">
       <Tooltip>
         <TooltipTrigger asChild>
           <motion.span

@@ -29,7 +29,7 @@ export function Uptime() {
   const elapsed = Date.now() - ORIGIN
 
   return (
-    <div className="fixed bottom-0 left-0 z-50 p-6">
+    <div className="fixed bottom-0 left-0 z-50 px-4 py-3 sm:p-6">
       <Tooltip>
         <TooltipTrigger asChild>
           <motion.span
