@@ -1,4 +1,4 @@
-import { hasSupabaseConfig } from "@/lib/supabase/config"
+import { getSupabaseConfig } from "@/lib/supabase/config"
 import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
 
@@ -11,13 +11,15 @@ export async function GET(request: Request) {
       ? rawNext
       : "/directory"
 
-  if (!hasSupabaseConfig()) {
+  const config = getSupabaseConfig()
+
+  if (!config) {
     return NextResponse.redirect(`${origin}/login?next=${encodeURIComponent(next)}&error=auth_unavailable`)
   }
 
   const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!
+    config.url,
+    config.key
   )
 
   const { data, error } = await supabase.auth.signInWithOAuth({
