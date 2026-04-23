@@ -103,7 +103,7 @@ function MemberRow({ member }: { member: DirectoryMember }) {
         </Badge>
       </td>
 
-      <td className="hidden px-3 py-3 sm:table-cell">
+      <td className="px-3 py-3">
         <a
           href={`mailto:${member.email}`}
           className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -113,7 +113,7 @@ function MemberRow({ member }: { member: DirectoryMember }) {
         </a>
       </td>
 
-      <td className="hidden px-3 py-3 md:table-cell">
+      <td className="hidden px-3 py-3 sm:table-cell">
         {member.phone ? (
           <a
             href={`tel:${member.phone}`}
@@ -127,7 +127,7 @@ function MemberRow({ member }: { member: DirectoryMember }) {
         )}
       </td>
 
-      <td className="hidden px-3 py-3 pr-4 lg:table-cell">
+      <td className="hidden px-3 py-3 pr-4 md:table-cell">
         {member.studentId ? (
           <span className="font-mono text-sm text-muted-foreground">
             {member.studentId}
@@ -155,13 +155,13 @@ function SkeletonRow() {
       <td className="px-3 py-3">
         <Skeleton className="h-5 w-14 rounded-full" />
       </td>
-      <td className="hidden px-3 py-3 sm:table-cell">
+      <td className="px-3 py-3">
         <Skeleton className="h-3.5 w-36" />
       </td>
-      <td className="hidden px-3 py-3 md:table-cell">
+      <td className="hidden px-3 py-3 sm:table-cell">
         <Skeleton className="h-3.5 w-24" />
       </td>
-      <td className="hidden px-3 py-3 pr-4 lg:table-cell">
+      <td className="hidden px-3 py-3 pr-4 md:table-cell">
         <Skeleton className="h-3.5 w-16" />
       </td>
     </tr>
@@ -297,7 +297,8 @@ export function MemberTable({ members }: MemberTableProps) {
 
       {/* Table */}
       <div className="overflow-hidden rounded-lg border border-border/60">
-        <table className="w-full text-left">
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[520px] text-left">
           <thead>
             <tr className="border-b border-border/60 bg-muted/30">
               <th className="py-2.5 pr-3 pl-4 text-xs font-medium text-muted-foreground">
@@ -306,13 +307,13 @@ export function MemberTable({ members }: MemberTableProps) {
               <th className="px-3 py-2.5 text-xs font-medium text-muted-foreground">
                 身份
               </th>
-              <th className="hidden px-3 py-2.5 text-xs font-medium text-muted-foreground sm:table-cell">
+              <th className="px-3 py-2.5 text-xs font-medium text-muted-foreground">
                 Email
               </th>
-              <th className="hidden px-3 py-2.5 text-xs font-medium text-muted-foreground md:table-cell">
+              <th className="hidden px-3 py-2.5 text-xs font-medium text-muted-foreground sm:table-cell">
                 電話
               </th>
-              <th className="hidden px-3 py-2.5 pr-4 text-xs font-medium text-muted-foreground lg:table-cell">
+              <th className="hidden px-3 py-2.5 pr-4 text-xs font-medium text-muted-foreground md:table-cell">
                 工號/學號
               </th>
             </tr>
@@ -376,6 +377,7 @@ export function MemberTable({ members }: MemberTableProps) {
             )}
           </tbody>
         </table>
+        </div>
 
         {filtered.length > 0 && (
           <div className="border-t border-border/60 bg-muted/20 px-4 py-2">
