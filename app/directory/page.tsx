@@ -1,5 +1,7 @@
 import { getDirectoryMembers } from "@/lib/services/users"
 import { MemberTable } from "@/components/directory/member-table"
+import { createClient } from "@/lib/supabase/server"
+import { redirect } from "next/navigation"
 
 export const dynamic = "force-dynamic"
 
@@ -9,6 +11,15 @@ export const metadata = {
 }
 
 export default async function DirectoryPage() {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect("/login?next=/directory")
+  }
+
   const members = await getDirectoryMembers()
 
   return (
