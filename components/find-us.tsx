@@ -18,7 +18,7 @@ export function FindUs() {
         initial={{ opacity: 0, y: 16 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={spring}
-        className="text-3xl font-medium"
+        className="text-2xl font-medium sm:text-3xl"
       >
         Find the Lab
       </motion.h2>
@@ -26,7 +26,7 @@ export function FindUs() {
         initial={{ opacity: 0, y: 16 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ ...spring, delay: 0.1 }}
-        className="text-muted-foreground text-sm"
+        className="text-sm text-muted-foreground"
       >
         Engineering Building C, Room 638 — 6F, right, then right again.
       </motion.p>
@@ -44,14 +44,14 @@ export function FindUs() {
           allowFullScreen
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
-          className="dark:invert dark:hue-rotate-180"
+          className="h-[200px] sm:h-[350px] dark:hue-rotate-180 dark:invert"
         />
       </motion.div>
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ ...spring, delay: 0.3 }}
-        className="text-muted-foreground flex flex-col gap-1 text-xs"
+        className="flex flex-col gap-1 text-xs text-muted-foreground"
       >
         <span>No. 1001, Daxue Rd., East Dist., Hsinchu City 300093</span>
         <span>National Yang Ming Chiao Tung University</span>

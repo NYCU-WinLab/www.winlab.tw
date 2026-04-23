@@ -37,7 +37,7 @@ export function Professor() {
             alt="Prof. Chien-Chao Tseng"
             width={240}
             height={240}
-            className="rounded-full object-cover"
+            className="h-36 w-36 rounded-full object-cover sm:h-60 sm:w-60"
           />
         </motion.div>
 
@@ -47,8 +47,10 @@ export function Professor() {
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ ...spring, delay: 0.1 }}
           >
-            <h2 className="text-4xl font-medium">Chien-Chao Tseng</h2>
-            <p className="text-muted-foreground mt-2 text-base">
+            <h2 className="text-2xl font-medium sm:text-4xl">
+              Chien-Chao Tseng
+            </h2>
+            <p className="mt-2 text-base text-muted-foreground">
               曾建超 — Distinguished Professor, NYCU
             </p>
           </motion.div>
@@ -60,7 +62,7 @@ export function Professor() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ ...spring, delay: 0.2 + i * 0.05 }}
-                className="border-border rounded-full border px-4 py-1.5 text-sm"
+                className="rounded-full border border-border px-4 py-1.5 text-sm"
               >
                 {tag}
               </motion.span>
@@ -71,7 +73,7 @@ export function Professor() {
             initial={{ opacity: 0, y: 16 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ ...spring, delay: 0.5 }}
-            className="text-muted-foreground flex flex-col gap-2 text-sm"
+            className="flex flex-col gap-2 text-sm text-muted-foreground"
           >
             <a
               href="mailto:cctseng@cs.nycu.edu.tw"

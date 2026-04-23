@@ -24,20 +24,20 @@ export default function Page() {
 
       <Professor />
 
-      <div className="mx-auto max-w-5xl p-6 pb-24">
+      <div className="mx-auto max-w-5xl px-4 py-6 pb-24 sm:px-6">
         <motion.h1
           ref={membersRef as React.RefObject<HTMLHeadingElement>}
           initial={{ opacity: 0, y: 16 }}
           animate={membersInView ? { opacity: 1, y: 0 } : {}}
           transition={{ type: "spring", stiffness: 200, damping: 20 }}
-          className="mb-8 text-center text-3xl font-medium"
+          className="mb-8 text-center text-2xl font-medium sm:text-3xl"
         >
           Members
         </motion.h1>
 
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="text-muted-foreground size-5 animate-spin" />
+            <Loader2 className="size-5 animate-spin text-muted-foreground" />
           </div>
         ) : error ? (
           <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">
@@ -51,7 +51,12 @@ export default function Page() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={membersInView ? { opacity: 1 } : {}}
-            transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.4 }}
+            transition={{
+              type: "spring",
+              stiffness: 200,
+              damping: 20,
+              delay: 0.4,
+            }}
             className="mt-10 flex justify-center"
           >
             <Link

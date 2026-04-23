@@ -19,7 +19,7 @@ export function About() {
         initial={{ opacity: 0, y: 16 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ ...spring, delay: 0 }}
-        className="text-muted-foreground text-sm tracking-widest uppercase"
+        className="text-sm tracking-widest text-muted-foreground uppercase"
       >
         Wireless Internet Laboratory
       </motion.p>
@@ -41,14 +41,14 @@ export function About() {
           alt="This is fine"
           width={320}
           height={180}
-          className="rounded-lg"
+          className="w-full max-w-xs rounded-lg sm:max-w-sm"
         />
       </motion.div>
       <motion.p
         initial={{ opacity: 0, y: 16 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ ...spring, delay: 0.3 }}
-        className="text-muted-foreground text-sm tracking-wide"
+        className="text-sm tracking-wide text-muted-foreground"
       >
         5G/6G · Cloud-Native · AI Agents
       </motion.p>
@@ -56,7 +56,7 @@ export function About() {
         initial={{ opacity: 0, y: 16 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ ...spring, delay: 0.4 }}
-        className="text-muted-foreground text-center text-base"
+        className="text-center text-base text-muted-foreground"
       >
         A systems lab that builds things that actually work.
       </motion.p>

@@ -36,11 +36,11 @@ function YearSection({ year, users }: YearGroup) {
         initial={{ opacity: 0, y: 12 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={spring}
-        className="text-muted-foreground mb-8 text-center text-sm font-medium"
+        className="mb-8 text-center text-sm font-medium text-muted-foreground"
       >
         Class of {year}
       </motion.h2>
-      <div className="grid grid-cols-2 gap-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-10 md:grid-cols-4 lg:grid-cols-5">
         {users.map((user, i) => (
           <motion.div
             key={user.id}
@@ -61,7 +61,7 @@ export function UserGrid({ users }: { users: PublicUser[] }) {
 
   if (groups.length === 0) {
     return (
-      <div className="text-muted-foreground py-12 text-center text-sm">
+      <div className="py-12 text-center text-sm text-muted-foreground">
         No users with admission year found.
       </div>
     )

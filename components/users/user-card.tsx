@@ -7,7 +7,7 @@ import type { PublicUser } from "@/hooks/use-users"
 export function UserCard({ user }: { user: PublicUser }) {
   return (
     <div className="flex flex-col items-center gap-3">
-      <Avatar className="size-28">
+      <Avatar className="size-20 sm:size-28">
         <AvatarImage src={user.gravatarUrl} alt={user.displayName} />
         <AvatarFallback className="text-2xl">
           {user.displayName.slice(0, 1)}

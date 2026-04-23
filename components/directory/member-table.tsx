@@ -103,7 +103,7 @@ function MemberRow({ member }: { member: DirectoryMember }) {
         </Badge>
       </td>
 
-      <td className="px-3 py-3">
+      <td className="hidden px-3 py-3 sm:table-cell">
         <a
           href={`mailto:${member.email}`}
           className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -113,7 +113,7 @@ function MemberRow({ member }: { member: DirectoryMember }) {
         </a>
       </td>
 
-      <td className="px-3 py-3">
+      <td className="hidden px-3 py-3 md:table-cell">
         {member.phone ? (
           <a
             href={`tel:${member.phone}`}
@@ -127,7 +127,7 @@ function MemberRow({ member }: { member: DirectoryMember }) {
         )}
       </td>
 
-      <td className="px-3 py-3 pr-4">
+      <td className="hidden px-3 py-3 pr-4 lg:table-cell">
         {member.studentId ? (
           <span className="font-mono text-sm text-muted-foreground">
             {member.studentId}
@@ -155,13 +155,13 @@ function SkeletonRow() {
       <td className="px-3 py-3">
         <Skeleton className="h-5 w-14 rounded-full" />
       </td>
-      <td className="px-3 py-3">
+      <td className="hidden px-3 py-3 sm:table-cell">
         <Skeleton className="h-3.5 w-36" />
       </td>
-      <td className="px-3 py-3">
+      <td className="hidden px-3 py-3 md:table-cell">
         <Skeleton className="h-3.5 w-24" />
       </td>
-      <td className="px-3 py-3 pr-4">
+      <td className="hidden px-3 py-3 pr-4 lg:table-cell">
         <Skeleton className="h-3.5 w-16" />
       </td>
     </tr>
@@ -232,7 +232,7 @@ export function MemberTable({ members }: MemberTableProps) {
               className="cursor-pointer border-b border-border/40 transition-colors select-none hover:bg-muted/20"
               onClick={() => toggle(key)}
             >
-              <td colSpan={5} className="bg-muted/10 px-8 py-1.5">
+              <td colSpan={99} className="bg-muted/10 px-8 py-1.5">
                 <div className="flex items-center gap-1.5">
                   <ChevronRight
                     className={`h-3 w-3 text-muted-foreground/50 transition-transform duration-150 ${
@@ -306,13 +306,13 @@ export function MemberTable({ members }: MemberTableProps) {
               <th className="px-3 py-2.5 text-xs font-medium text-muted-foreground">
                 身份
               </th>
-              <th className="px-3 py-2.5 text-xs font-medium text-muted-foreground">
+              <th className="hidden px-3 py-2.5 text-xs font-medium text-muted-foreground sm:table-cell">
                 Email
               </th>
-              <th className="px-3 py-2.5 text-xs font-medium text-muted-foreground">
+              <th className="hidden px-3 py-2.5 text-xs font-medium text-muted-foreground md:table-cell">
                 電話
               </th>
-              <th className="px-3 py-2.5 pr-4 text-xs font-medium text-muted-foreground">
+              <th className="hidden px-3 py-2.5 pr-4 text-xs font-medium text-muted-foreground lg:table-cell">
                 工號/學號
               </th>
             </tr>
@@ -321,7 +321,7 @@ export function MemberTable({ members }: MemberTableProps) {
             {filtered.length === 0 ? (
               <tr>
                 <td
-                  colSpan={5}
+                  colSpan={99}
                   className="py-16 text-center text-sm text-muted-foreground"
                 >
                   {query ? `找不到「${query}」相關的成員` : "尚無成員資料"}
@@ -346,7 +346,7 @@ export function MemberTable({ members }: MemberTableProps) {
                       className="cursor-pointer border-b border-border/50 transition-colors select-none hover:bg-muted/30"
                       onClick={() => toggle(role)}
                     >
-                      <td colSpan={5} className="bg-muted/20 px-4 py-1.5">
+                      <td colSpan={99} className="bg-muted/20 px-4 py-1.5">
                         <div className="flex items-center gap-2">
                           <ChevronRight
                             className={`h-3.5 w-3.5 text-muted-foreground/60 transition-transform duration-150 ${
