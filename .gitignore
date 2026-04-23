@@ -32,6 +32,11 @@ pnpm-debug.log*
 .env
 .env*.local
 
+# local tooling outputs
+.playwright-mcp/
+scripts/members-export.csv
+scripts/unmatched-members.csv
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
