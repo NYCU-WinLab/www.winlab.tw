@@ -113,7 +113,7 @@ function MemberRow({ member }: { member: DirectoryMember }) {
         </a>
       </td>
 
-      <td className="hidden px-3 py-3 sm:table-cell">
+      <td className="px-3 py-3">
         {member.phone ? (
           <a
             href={`tel:${member.phone}`}
@@ -158,7 +158,7 @@ function SkeletonRow() {
       <td className="px-3 py-3">
         <Skeleton className="h-3.5 w-36" />
       </td>
-      <td className="hidden px-3 py-3 sm:table-cell">
+      <td className="px-3 py-3">
         <Skeleton className="h-3.5 w-24" />
       </td>
       <td className="hidden px-3 py-3 pr-4 md:table-cell">
@@ -298,7 +298,7 @@ export function MemberTable({ members }: MemberTableProps) {
       {/* Table */}
       <div className="overflow-hidden rounded-lg border border-border/60">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[520px] text-left">
+          <table className="w-full min-w-[640px] text-left">
             <thead>
               <tr className="border-b border-border/60 bg-muted/30">
                 <th className="py-2.5 pr-3 pl-4 text-xs font-medium text-muted-foreground">
@@ -310,7 +310,7 @@ export function MemberTable({ members }: MemberTableProps) {
                 <th className="px-3 py-2.5 text-xs font-medium text-muted-foreground">
                   Email
                 </th>
-                <th className="hidden px-3 py-2.5 text-xs font-medium text-muted-foreground sm:table-cell">
+                <th className="px-3 py-2.5 text-xs font-medium text-muted-foreground">
                   電話
                 </th>
                 <th className="hidden px-3 py-2.5 pr-4 text-xs font-medium text-muted-foreground md:table-cell">
