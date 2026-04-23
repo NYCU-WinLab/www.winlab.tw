@@ -1,10 +1,13 @@
 import { createBrowserClient } from "@supabase/ssr"
+import { getSupabaseConfig } from "@/lib/supabase/config"
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY
+export const createClient = () => {
+  const config = getSupabaseConfig()
+  if (!config) {
+    throw new Error("Supabase auth is not configured")
+  }
 
-export const createClient = () =>
-  createBrowserClient(supabaseUrl!, supabaseKey!, {
+  return createBrowserClient(config.url, config.key, {
     cookieOptions: {
       domain:
         process.env.NODE_ENV === "production" &&
@@ -16,3 +19,4 @@ export const createClient = () =>
       secure: process.env.NODE_ENV === "production",
     },
   })
+}

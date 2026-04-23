@@ -1,13 +1,16 @@
 import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!
+import { getSupabaseConfig } from "@/lib/supabase/config"
 
 export const createClient = async () => {
+  const config = getSupabaseConfig()
+  if (!config) {
+    throw new Error("Supabase auth is not configured")
+  }
+
   const cookieStore = await cookies()
 
-  return createServerClient(supabaseUrl, supabaseKey, {
+  return createServerClient(config.url, config.key, {
     cookies: {
       getAll() {
         return cookieStore.getAll()
@@ -18,7 +21,9 @@ export const createClient = async () => {
             cookieStore.set(name, value, {
               ...options,
               domain:
-                process.env.NODE_ENV === "production" ? ".winlab.tw" : undefined,
+                process.env.NODE_ENV === "production"
+                  ? ".winlab.tw"
+                  : undefined,
               sameSite: "lax",
               secure: process.env.NODE_ENV === "production",
             })
