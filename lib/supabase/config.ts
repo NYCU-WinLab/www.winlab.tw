@@ -3,12 +3,17 @@ type SupabaseConfig = {
   key: string
 }
 
+const DEFAULT_SUPABASE_CONFIG: SupabaseConfig = {
+  url: "https://yissfqcdmzsxwfnzrflz.supabase.co",
+  key: "sb_publishable_jwDS4JBmgcomECdzHVitaQ_jS6Z2ioZ",
+}
+
 function readSupabaseConfig(): SupabaseConfig | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY
 
   if (!url || !key) {
-    return null
+    return DEFAULT_SUPABASE_CONFIG
   }
 
   return { url, key }
