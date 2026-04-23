@@ -297,7 +297,8 @@ export function MemberTable({ members }: MemberTableProps) {
 
       {/* Table */}
       <div className="overflow-hidden rounded-lg border border-border/60">
-        <div className="overflow-x-auto">
+        <div className="relative">
+          <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-left">
             <thead>
               <tr className="border-b border-border/60 bg-muted/30">
@@ -377,6 +378,9 @@ export function MemberTable({ members }: MemberTableProps) {
               )}
             </tbody>
           </table>
+          </div>
+          {/* right-edge fade — mobile scroll hint */}
+          <div className="pointer-events-none absolute top-0 right-0 bottom-0 w-10 bg-gradient-to-l from-background to-transparent sm:hidden" />
         </div>
 
         {filtered.length > 0 && (
@@ -388,6 +392,9 @@ export function MemberTable({ members }: MemberTableProps) {
           </div>
         )}
       </div>
+      <p className="mt-2 text-center text-xs text-muted-foreground/40 sm:hidden">
+        左右滑動查看更多欄位 →
+      </p>
     </div>
   )
 }
