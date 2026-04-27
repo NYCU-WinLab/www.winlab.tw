@@ -10,6 +10,8 @@ export async function GET() {
     WL_SUPABASE_KEY: !!process.env.WL_SUPABASE_KEY,
     WL_AUTH_URL: !!process.env.WL_AUTH_URL,
     WL_AUTH_KEY: !!process.env.WL_AUTH_KEY,
+    KEYCLOAK_TEST: !!process.env.KEYCLOAK_TEST,
+    APP_TEST: !!process.env.APP_TEST,
     NEXT_PUBLIC_SUPABASE_URL: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY:
       !!process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY,
