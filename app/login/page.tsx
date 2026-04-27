@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { Suspense } from "react"
 
@@ -26,12 +25,12 @@ function LoginForm() {
         </p>
       )}
 
-      <Link
+      <a
         href={loginHref}
         className="rounded-md border border-border/60 bg-muted/30 px-6 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground disabled:opacity-50"
       >
         使用 Keycloak 登入
-      </Link>
+      </a>
     </div>
   )
 }
