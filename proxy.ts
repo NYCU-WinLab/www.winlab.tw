@@ -8,35 +8,39 @@ export async function proxy(request: NextRequest) {
     request: { headers: request.headers },
   })
 
+  // No Supabase configured (e.g. local dev without env) — let request through
   if (!hasSupabaseConfig()) {
     return response
   }
-  const config = requireSupabaseConfig()
 
-  const supabase = createServerClient(
-    config.url,
-    config.key,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          )
-        },
+  const { url, key } = requireSupabaseConfig()
+
+  const supabase = createServerClient(url, key, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll()
       },
-    }
-  )
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value, options }) =>
+          response.cookies.set(name, value, options)
+        )
+      },
+    },
+  })
 
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
+  if (!user) {
+    const loginUrl = new URL("/login", request.url)
+    loginUrl.searchParams.set("next", request.nextUrl.pathname)
+    return NextResponse.redirect(loginUrl)
+  }
+
   return response
 }
 
-export const config = {
+export const proxyConfig = {
   matcher: ["/directory/:path*"],
 }
