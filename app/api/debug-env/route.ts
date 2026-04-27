@@ -4,15 +4,17 @@ export const dynamic = "force-dynamic"
 
 export async function GET() {
   return NextResponse.json({
-    hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-    hasKey: !!process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY,
-    urlLength: process.env.NEXT_PUBLIC_SUPABASE_URL?.length ?? 0,
-    keyLength: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY?.length ?? 0,
-    urlPrefix: process.env.NEXT_PUBLIC_SUPABASE_URL?.slice(0, 8) ?? null,
-    hasKeycloakUrl: !!process.env.KEYCLOAK_URL,
-    hasKeycloakAdmin: !!process.env.KEYCLOAK_ADMIN_PASSWORD,
+    SUPABASE_URL: !!process.env.SUPABASE_URL,
+    SUPABASE_ANON_KEY: !!process.env.SUPABASE_ANON_KEY,
+    NEXT_PUBLIC_SUPABASE_URL: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY: !!process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY,
+    KEYCLOAK_URL: !!process.env.KEYCLOAK_URL,
+    KEYCLOAK_ADMIN_CLIENT_ID: !!process.env.KEYCLOAK_ADMIN_CLIENT_ID,
+    KEYCLOAK_ADMIN_CLIENT_SECRET: !!process.env.KEYCLOAK_ADMIN_CLIENT_SECRET,
     nodeEnv: process.env.NODE_ENV,
-    publicKeys: Object.keys(process.env).filter((k) => k.startsWith("NEXT_PUBLIC_")),
-    supabaseLikeKeys: Object.keys(process.env).filter((k) => k.toLowerCase().includes("supabase")),
+    vercelEnv: process.env.VERCEL_ENV,
+    allKeys: Object.keys(process.env).filter(
+      (k) => !k.startsWith("__") && !k.startsWith("npm_") && !k.startsWith("AWS_") && !k.startsWith("LD_")
+    ).sort(),
   })
 }
