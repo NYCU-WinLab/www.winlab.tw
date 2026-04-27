@@ -59,6 +59,22 @@ export const ROLE_ORDER: MemberRole[] = [
   "pending",
 ]
 
+const USERS_CACHE_TTL_MS = 5 * 60 * 1000
+
+let usersCache:
+  | {
+      expiresAt: number
+      users: KeycloakUser[]
+    }
+  | undefined
+
+let directoryCache:
+  | {
+      expiresAt: number
+      members: DirectoryMember[]
+    }
+  | undefined
+
 function gravatarUrl(email?: string) {
   const hash = email
     ? createHash("md5").update(email.trim().toLowerCase()).digest("hex")
@@ -73,7 +89,7 @@ function flattenAttributes(
   return Object.fromEntries(Object.entries(attrs).map(([k, v]) => [k, v?.[0]]))
 }
 
-export async function getUsers(): Promise<KeycloakUser[]> {
+async function fetchUsers(): Promise<KeycloakUser[]> {
   const kc = await getKeycloakAdmin()
   const users = await kc.users.find({
     realm: process.env.KEYCLOAK_REALM!,
@@ -95,14 +111,33 @@ export async function getUsers(): Promise<KeycloakUser[]> {
     }))
 }
 
+export async function getUsers(): Promise<KeycloakUser[]> {
+  const now = Date.now()
+  if (usersCache && usersCache.expiresAt > now) {
+    return usersCache.users
+  }
+
+  const users = await fetchUsers()
+  usersCache = {
+    expiresAt: now + USERS_CACHE_TTL_MS,
+    users,
+  }
+  return users
+}
+
 export async function getDirectoryMembers(): Promise<DirectoryMember[]> {
+  const now = Date.now()
+  if (directoryCache && directoryCache.expiresAt > now) {
+    return directoryCache.members
+  }
+
   const kc = await getKeycloakAdmin()
   const users = await kc.users.find({
     realm: process.env.KEYCLOAK_REALM!,
     max: -1,
   })
 
-  return users
+  const members = users
     .filter((u) => u.enabled)
     .map((u) => {
       const attrs = (u.attributes as Record<string, string[]>) ?? {}
@@ -124,4 +159,12 @@ export async function getDirectoryMembers(): Promise<DirectoryMember[]> {
         studentId: attrs.student_id?.[0],
       }
     })
+    .sort((a, b) => a.name.localeCompare(b.name, "zh-TW"))
+
+  directoryCache = {
+    expiresAt: now + USERS_CACHE_TTL_MS,
+    members,
+  }
+
+  return members
 }
