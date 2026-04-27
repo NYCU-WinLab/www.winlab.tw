@@ -12,5 +12,7 @@ export async function GET() {
     hasKeycloakUrl: !!process.env.KEYCLOAK_URL,
     hasKeycloakAdmin: !!process.env.KEYCLOAK_ADMIN_PASSWORD,
     nodeEnv: process.env.NODE_ENV,
+    publicKeys: Object.keys(process.env).filter((k) => k.startsWith("NEXT_PUBLIC_")),
+    supabaseLikeKeys: Object.keys(process.env).filter((k) => k.toLowerCase().includes("supabase")),
   })
 }
