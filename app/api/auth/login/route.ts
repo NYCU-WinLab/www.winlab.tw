@@ -1,5 +1,5 @@
-import { hasSupabaseConfig, requireSupabaseConfig } from "@/lib/supabase/config"
-import { createClient } from "@supabase/supabase-js"
+import { createClient } from "@/lib/supabase/server"
+import { hasSupabaseConfig } from "@/lib/supabase/config"
 import { NextResponse } from "next/server"
 
 export async function GET(request: Request) {
@@ -16,9 +16,7 @@ export async function GET(request: Request) {
       `${origin}/login?next=${encodeURIComponent(next)}&error=auth_unavailable`
     )
   }
-  const config = requireSupabaseConfig()
-
-  const supabase = createClient(config.url, config.key)
+  const supabase = await createClient()
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "keycloak",
