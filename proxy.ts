@@ -41,6 +41,6 @@ export async function proxy(request: NextRequest) {
   return response
 }
 
-export const proxyConfig = {
+export const config = {
   matcher: ["/directory/:path*"],
 }

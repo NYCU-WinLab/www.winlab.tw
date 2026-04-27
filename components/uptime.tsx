@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { motion } from "motion/react"
 
 import {
@@ -26,7 +27,14 @@ function formatFull(ms: number) {
 }
 
 export function Uptime() {
-  const elapsed = Date.now() - ORIGIN
+  const [now, setNow] = useState(0)
+
+  useEffect(() => {
+    const interval = window.setInterval(() => setNow(Date.now()), 1000)
+    return () => window.clearInterval(interval)
+  }, [])
+
+  const elapsed = now === 0 ? 0 : now - ORIGIN
 
   return (
     <div className="fixed bottom-0 left-0 z-50 hidden px-4 py-3 sm:block sm:p-6">

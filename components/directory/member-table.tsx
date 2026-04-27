@@ -12,7 +12,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Skeleton } from "@/components/ui/skeleton"
 
 const ALL_ROLES = "all"
 
@@ -140,34 +139,6 @@ function MemberRow({ member }: { member: DirectoryMember }) {
   )
 }
 
-function SkeletonRow() {
-  return (
-    <tr className="border-b border-border/50">
-      <td className="py-3 pr-3 pl-4">
-        <div className="flex items-center gap-3">
-          <Skeleton className="h-8 w-8 shrink-0 rounded-md" />
-          <div className="space-y-1.5">
-            <Skeleton className="h-3.5 w-24" />
-            <Skeleton className="h-3 w-16" />
-          </div>
-        </div>
-      </td>
-      <td className="px-3 py-3">
-        <Skeleton className="h-5 w-14 rounded-full" />
-      </td>
-      <td className="px-3 py-3">
-        <Skeleton className="h-3.5 w-36" />
-      </td>
-      <td className="px-3 py-3">
-        <Skeleton className="h-3.5 w-24" />
-      </td>
-      <td className="hidden px-3 py-3 pr-4 md:table-cell">
-        <Skeleton className="h-3.5 w-16" />
-      </td>
-    </tr>
-  )
-}
-
 interface MemberTableProps {
   members: DirectoryMember[]
 }
@@ -182,7 +153,11 @@ export function MemberTable({ members }: MemberTableProps) {
   const toggle = (key: string) =>
     setCollapsed((prev) => {
       const next = new Set(prev)
-      next.has(key) ? next.delete(key) : next.add(key)
+      if (next.has(key)) {
+        next.delete(key)
+      } else {
+        next.add(key)
+      }
       return next
     })
 

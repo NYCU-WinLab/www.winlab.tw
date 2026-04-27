@@ -12,14 +12,13 @@ export async function GET(request: Request) {
       : "/directory"
 
   if (!hasSupabaseConfig()) {
-    return NextResponse.redirect(`${origin}/login?next=${encodeURIComponent(next)}&error=auth_unavailable`)
+    return NextResponse.redirect(
+      `${origin}/login?next=${encodeURIComponent(next)}&error=auth_unavailable`
+    )
   }
   const config = requireSupabaseConfig()
 
-  const supabase = createClient(
-    config.url,
-    config.key
-  )
+  const supabase = createClient(config.url, config.key)
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "keycloak",
@@ -31,7 +30,9 @@ export async function GET(request: Request) {
   })
 
   if (error || !data?.url) {
-    return NextResponse.redirect(`${origin}/login?next=${encodeURIComponent(next)}&error=auth_error`)
+    return NextResponse.redirect(
+      `${origin}/login?next=${encodeURIComponent(next)}&error=auth_error`
+    )
   }
 
   return NextResponse.redirect(data.url)

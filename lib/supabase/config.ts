@@ -3,14 +3,38 @@ type SupabaseConfig = {
   key: string
 }
 
-// Server-side reads non-prefixed vars (Turbopack/Next.js 16 doesn't expose
-// NEXT_PUBLIC_* to server runtime). Client-side bundles inline NEXT_PUBLIC_*
-// at build time via lib/supabase/client.ts directly.
-function readSupabaseConfig(): SupabaseConfig | null {
-  const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL
-  const key =
-    process.env.SUPABASE_ANON_KEY ??
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY
+function readEnv(names: string[]): string | undefined {
+  for (const name of names) {
+    const value = process.env[name]
+    if (value) return value
+  }
+}
+
+function readServerSupabaseConfig(): SupabaseConfig | null {
+  const url = readEnv([
+    "SUPABASE_URL",
+    "WL_AUTH_URL",
+    "WL_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_URL",
+  ])
+  const key = readEnv([
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_PUBLISHABLE_KEY",
+    "WL_AUTH_KEY",
+    "WL_SUPABASE_KEY",
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY",
+  ])
+
+  if (!url || !key) {
+    return null
+  }
+
+  return { url, key }
+}
+
+function readBrowserSupabaseConfig(): SupabaseConfig | null {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY
 
   if (!url || !key) {
     return null
@@ -20,19 +44,35 @@ function readSupabaseConfig(): SupabaseConfig | null {
 }
 
 export function getSupabaseConfig() {
-  return readSupabaseConfig()
+  return readServerSupabaseConfig()
+}
+
+export function getBrowserSupabaseConfig() {
+  return readBrowserSupabaseConfig()
 }
 
 export function hasSupabaseConfig() {
-  return readSupabaseConfig() !== null
+  return readServerSupabaseConfig() !== null
 }
 
 export function requireSupabaseConfig() {
-  const config = readSupabaseConfig()
+  const config = readServerSupabaseConfig()
 
   if (!config) {
     throw new Error(
-      "Missing Supabase auth config: set SUPABASE_URL and SUPABASE_ANON_KEY (server) or NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY (build-time)"
+      "Missing Supabase auth config: set SUPABASE_URL and SUPABASE_ANON_KEY in Vercel runtime env"
+    )
+  }
+
+  return config
+}
+
+export function requireBrowserSupabaseConfig() {
+  const config = readBrowserSupabaseConfig()
+
+  if (!config) {
+    throw new Error(
+      "Missing public Supabase config: set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY"
     )
   }
 

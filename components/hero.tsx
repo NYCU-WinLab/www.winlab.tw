@@ -35,7 +35,9 @@ const COLS = heroData.cols as number
 export function Hero() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const mouseRef = useRef({ x: -9999, y: -9999 })
-  const glitchMapRef = useRef(new Map<number, { ch: string; expires: number }>())
+  const glitchMapRef = useRef(
+    new Map<number, { ch: string; expires: number }>()
+  )
   const { resolvedTheme } = useTheme()
   const themeRef = useRef(resolvedTheme)
   const rafRef = useRef<number>(0)
@@ -44,7 +46,7 @@ export function Hero() {
     themeRef.current = resolvedTheme
   }, [resolvedTheme])
 
-  const render = useCallback(() => {
+  const render = useCallback(function renderFrame() {
     const canvas = canvasRef.current
     if (!canvas) return
 
@@ -63,10 +65,7 @@ export function Hero() {
     ctx.fillRect(0, 0, rect.width, rect.height)
 
     // square cells — original SVG uses 12x12 grid
-    const cellSize = Math.min(
-      rect.width / (COLS + 4),
-      rect.height / (ROWS + 4)
-    )
+    const cellSize = Math.min(rect.width / (COLS + 4), rect.height / (ROWS + 4))
     const cellW = cellSize
     const cellH = cellSize
 
@@ -108,7 +107,10 @@ export function Hero() {
 
       // blend radial falloff with cross shape
       const radial = Math.max(0, 1 - dist / radius)
-      const influence = Math.min(1, radial * 0.4 + crossBoost * Math.max(0, 1 - dist / (radius * 1.8)))
+      const influence = Math.min(
+        1,
+        radial * 0.4 + crossBoost * Math.max(0, 1 - dist / (radius * 1.8))
+      )
 
       // character shift: wave + mouse boost density
       const shift = wave + influence * 3
@@ -124,7 +126,10 @@ export function Hero() {
         ch = existing.ch
       } else if (Math.random() < 0.00005) {
         const glitchCh = CHARSET[Math.floor(Math.random() * CHARSET.length)]
-        glitchMapRef.current.set(i, { ch: glitchCh, expires: now + 0.3 + Math.random() * 0.4 })
+        glitchMapRef.current.set(i, {
+          ch: glitchCh,
+          expires: now + 0.3 + Math.random() * 0.4,
+        })
         ch = glitchCh
       } else if (existing) {
         glitchMapRef.current.delete(i)
@@ -156,7 +161,7 @@ export function Hero() {
       ctx.fillText(ch, x, y)
     }
 
-    rafRef.current = requestAnimationFrame(render)
+    rafRef.current = requestAnimationFrame(renderFrame)
   }, [])
 
   useEffect(() => {
