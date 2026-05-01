@@ -60,6 +60,23 @@ export function About() {
       >
         A systems lab that builds things that actually work.
       </motion.p>
+      <motion.p
+        initial={{ opacity: 0, y: 16 }}
+        animate={inView ? { opacity: 1, y: 0 } : {}}
+        transition={{ ...spring, delay: 0.5 }}
+        className="text-center text-sm text-muted-foreground"
+      >
+        P.S. We also run NYCU's{" "}
+        <a
+          href="https://ai.winlab.tw"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline underline-offset-4 transition-colors hover:text-foreground"
+        >
+          Office of AI Affairs · 人工智慧專責辦公室
+        </a>
+        .
+      </motion.p>
     </section>
   )
 }
