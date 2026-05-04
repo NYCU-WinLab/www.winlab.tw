@@ -21,6 +21,10 @@
 # misc
 .DS_Store
 *.pem
+*.user
+*.userossc
+*.suo
+*.rsuser
 
 # debug
 npm-debug.log*
