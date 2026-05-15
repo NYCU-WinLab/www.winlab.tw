@@ -16,6 +16,7 @@ export async function proxy(request: NextRequest) {
   const { url, key } = requireSupabaseConfig()
 
   const supabase = createServerClient(url, key, {
+    cookieOptions: { name: "www" },
     cookies: {
       getAll() {
         return request.cookies.getAll()
