@@ -8,6 +8,7 @@ export const createClient = async () => {
   const cookieStore = await cookies()
 
   return createServerClient(config.url, config.key, {
+    cookieOptions: { name: "www" },
     cookies: {
       getAll() {
         return cookieStore.getAll()
@@ -15,15 +16,7 @@ export const createClient = async () => {
       setAll(cookiesToSet) {
         try {
           cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, {
-              ...options,
-              domain:
-                process.env.NODE_ENV === "production"
-                  ? ".winlab.tw"
-                  : undefined,
-              sameSite: "lax",
-              secure: process.env.NODE_ENV === "production",
-            })
+            cookieStore.set(name, value, options)
           )
         } catch {
           // Server component — cookies can't be set, ignore
