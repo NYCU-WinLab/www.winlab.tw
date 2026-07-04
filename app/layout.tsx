@@ -1,5 +1,7 @@
+import { trace } from "@opentelemetry/api"
 import type { Metadata } from "next"
 import { Geist_Mono } from "next/font/google"
+import { headers } from "next/headers"
 
 import "./globals.css"
 import { Footer } from "@/components/footer"
@@ -9,6 +11,7 @@ import { Uptime } from "@/components/uptime"
 import { PageTransition } from "@/components/page-transition"
 import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { getClientAttributionAttributes } from "@/lib/otel/attribution"
 
 export const metadata: Metadata = {
   title: {
@@ -60,11 +63,21 @@ const fontMono = Geist_Mono({
   variable: "--font-mono",
 })
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  // Client attribution for Sensorium: proxy.ts can't see the exported
+  // request span on Vercel (it runs in the Edge sandbox, isolated from the
+  // Node.js OTel context instrumentation.ts registers — see
+  // lib/otel/attribution.ts's docstring for the fixed attribute-key
+  // contract). Root layout runs as a Node.js Server Component, so
+  // `trace.getActiveSpan()` here is the same span Sensorium receives.
+  trace
+    .getActiveSpan()
+    ?.setAttributes(getClientAttributionAttributes(await headers()))
+
   return (
     <html
       lang="zh-TW"
