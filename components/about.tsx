@@ -66,7 +66,7 @@ export function About() {
         transition={{ ...spring, delay: 0.5 }}
         className="text-center text-sm text-muted-foreground"
       >
-        P.S. We also run NYCU's{" "}
+        P.S. We also run NYCU&apos;s{" "}
         <a
           href="https://ai.winlab.tw"
           target="_blank"
