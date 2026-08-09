@@ -34,15 +34,28 @@ const csp = [
   "img-src 'self' data: https://gravatar.com",
   // next/font/google self-hosts Geist Mono at build time.
   "font-src 'self'",
+  // Heads-up: lib/supabase/client.ts exports a browser client that currently
+  // has no importers — every Supabase call today is server-side. Wiring that
+  // client up would need NEXT_PUBLIC_SUPABASE_URL added here, or its requests
+  // get blocked with nothing but a console violation to go on.
   `connect-src 'self'${isDev ? " ws:" : ""}`,
-  // The "Find the Lab" section embeds a Google Maps place iframe.
-  "frame-src https://www.google.com",
+  // The "Find the Lab" section embeds a Google Maps place iframe. Visitors
+  // without Google consent cookies (EEA/UK/CH) get redirected to
+  // consent.google.com on the way in, and CSP re-checks frame-src on every
+  // redirect hop — so the consent host has to be listed too or the map comes
+  // up blank for them.
+  "frame-src https://www.google.com https://consent.google.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
   "object-src 'none'",
-  "upgrade-insecure-requests",
-].join("; ")
+  // Not applied in dev: localhost is exempt as a trustworthy origin, but
+  // testing from a phone on the LAN IP would have every subresource upgraded
+  // to https against a server that only speaks http.
+  isDev ? null : "upgrade-insecure-requests",
+]
+  .filter(Boolean)
+  .join("; ")
 
 const securityHeaders = [
   { key: "Content-Security-Policy", value: csp },
