@@ -36,3 +36,8 @@ jobs:
       # lib/supabase/config.ts degrades gracefully when the env is absent, so
       # the production build completes without any environment configured.
       - run: bun run build
+
+      # The /directory CSP allow-lists next-themes' inline script by hash.
+      # This fails the build if that script drifts, rather than letting the
+      # stale hash reach production as a light-mode flash on /directory.
+      - run: bun run verify:csp-hash

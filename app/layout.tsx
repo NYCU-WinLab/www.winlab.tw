@@ -5,7 +5,6 @@ import { headers } from "next/headers"
 
 import "./globals.css"
 import { Footer } from "@/components/footer"
-import { JsonLd } from "@/components/json-ld"
 import { Header } from "@/components/header"
 import { Uptime } from "@/components/uptime"
 import { PageTransition } from "@/components/page-transition"
@@ -74,6 +73,11 @@ export default async function RootLayout({
   // lib/otel/attribution.ts's docstring for the fixed attribute-key
   // contract). Root layout runs as a Node.js Server Component, so
   // `trace.getActiveSpan()` here is the same span Sensorium receives.
+  // Do NOT hoist `await headers()` into a variable. The optional chaining below
+  // short-circuits when there is no active span — which is the case during
+  // prerendering — so `headers()` is never evaluated at build time and the
+  // marketing routes stay statically prerendered. Reading a request header
+  // unconditionally here turns /, /login and /_not-found into ƒ (Dynamic).
   trace
     .getActiveSpan()
     ?.setAttributes(getClientAttributionAttributes(await headers()))
@@ -85,7 +89,6 @@ export default async function RootLayout({
       className={`${fontMono.variable} font-mono antialiased`}
     >
       <body>
-        <JsonLd />
         <ThemeProvider>
           <TooltipProvider>
             <Header />

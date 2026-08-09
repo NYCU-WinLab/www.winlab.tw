@@ -10,7 +10,8 @@
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
-    "verify:auth": "node scripts/verify-auth-redirect.mjs"
+    "verify:auth": "node scripts/verify-auth-redirect.mjs",
+    "verify:csp-hash": "node scripts/verify-csp-hash.mjs"
   },
   "dependencies": {
     "@keycloak/keycloak-admin-client": "^26.5.7",
