@@ -8,6 +8,7 @@ import { useInView } from "@/hooks/use-in-view"
 import { About } from "@/components/about"
 import { FindUs } from "@/components/find-us"
 import { Hero } from "@/components/hero"
+import { JsonLd } from "@/components/json-ld"
 import { Professor } from "@/components/professor"
 import { UserGrid } from "@/components/users/user-grid"
 import { useUsers } from "@/hooks/use-users"
@@ -18,6 +19,12 @@ export default function Page() {
 
   return (
     <>
+      {/* Organisation schema belongs on the landing page, not on every
+          route — /directory is noindex, and keeping this out of the root
+          layout means its inline <script> never has to satisfy the stricter
+          nonce CSP that proxy.ts applies there. */}
+      <JsonLd />
+
       <Hero />
 
       <About />
