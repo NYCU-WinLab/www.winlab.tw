@@ -1,10 +1,17 @@
 import { createClient } from "@supabase/supabase-js"
 import { writeFileSync } from "fs"
 
-const supabase = createClient(
-  "https://yissfqcdmzsxwfnzrflz.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlpc3NmcWNkbXpzeHdmbnpyZmx6Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTc3ODUxOSwiZXhwIjoyMDgxMzU0NTE5fQ.fMRf99wNOCBtr8Mze9zApWmSU54bM_hu_UA8FcI9Nx4"
-)
+// Server/CLI-only credentials. Never inline them — read from the environment
+// (see .env.example) so no key ever lands in source or git history.
+const url = process.env.SUPABASE_URL
+const key = process.env.SUPABASE_SECRET_KEY
+if (!url || !key) {
+  throw new Error(
+    "Set SUPABASE_URL and SUPABASE_SECRET_KEY in scripts/.env.local, then run: bun --env-file=scripts/.env.local scripts/export-members.ts"
+  )
+}
+
+const supabase = createClient(url, key)
 
 const { data, error } = await supabase
   .from("members")
