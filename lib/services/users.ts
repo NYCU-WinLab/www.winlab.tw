@@ -59,6 +59,24 @@ export const ROLE_ORDER: MemberRole[] = [
   "pending",
 ]
 
+/**
+ * Keycloak's `role` attribute has no validation, so any string can arrive.
+ * Unrecognised values become "pending" (待確認) rather than being asserted
+ * through as MemberRole — a visible degradation instead of a row that vanishes
+ * from the directory. Cleaning up bad data doesn't retire this: one stray
+ * leading space brings it back.
+ *
+ * Checked against ROLE_LABELS because only that is a Record<MemberRole, …> the
+ * compiler keeps exhaustive — ROLE_ORDER can silently lag a newly added role.
+ * `Object.hasOwn`, not `in`, so a role named "toString" can't match via the
+ * prototype chain.
+ */
+function toMemberRole(value: string | undefined): MemberRole {
+  return value && Object.hasOwn(ROLE_LABELS, value)
+    ? (value as MemberRole)
+    : "pending"
+}
+
 const USERS_CACHE_TTL_MS = 5 * 60 * 1000
 
 let usersCache:
@@ -149,7 +167,7 @@ export async function getDirectoryMembers(): Promise<DirectoryMember[]> {
         nameEn,
         email: u.email ?? "",
         phone: attrs.phone?.[0],
-        role: (attrs.role?.[0] as MemberRole) ?? "pending",
+        role: toMemberRole(attrs.role?.[0]),
         position: attrs.position?.[0],
         gravatarUrl: gravatarUrl(u.email),
         github: attrs.github?.[0],
