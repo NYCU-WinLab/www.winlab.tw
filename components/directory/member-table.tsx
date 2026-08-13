@@ -98,7 +98,7 @@ function MemberRow({ member }: { member: DirectoryMember }) {
           variant={roleBadgeVariant(member.role)}
           className="whitespace-nowrap"
         >
-          {member.position ?? ROLE_LABELS[member.role]}
+          {member.position ?? ROLE_LABELS[member.role] ?? member.role}
         </Badge>
       </td>
 
@@ -180,12 +180,10 @@ export function MemberTable({ members }: MemberTableProps) {
       .sort((a, b) => a.name.localeCompare(b.name, "zh-TW"))
   }, [members, query, selectedRole])
 
-  // Drives both the filter chips and the table's group order. Roles outside
-  // ROLE_ORDER are appended rather than dropped: this component receives
-  // `members` as a prop, so it cannot assume the service layer normalised them
-  // (it does — see toMemberRole — but a second caller might not). Dropping an
-  // unknown role here removes the member from the table with no other trace.
-  const availableRoles = useMemo(() => {
+  // Unknown roles are appended, not dropped: dropping one removes the member
+  // from the table while the footer still counts them via `filtered.length`, so
+  // the page contradicts itself instead of erroring.
+  const roleGroupOrder = useMemo(() => {
     const present = new Set(members.map((m) => m.role))
     const known = ROLE_ORDER.filter((r) => present.has(r))
     const unknown = [...present].filter((r) => !ROLE_ORDER.includes(r))
@@ -261,7 +259,7 @@ export function MemberTable({ members }: MemberTableProps) {
           >
             全部
           </button>
-          {availableRoles.map((role) => (
+          {roleGroupOrder.map((role) => (
             <button
               key={role}
               onClick={() => setSelectedRole(role)}
@@ -327,7 +325,7 @@ export function MemberTable({ members }: MemberTableProps) {
                     filtered.map((m) => <MemberRow key={m.id} member={m} />)
                   )
                 ) : (
-                  availableRoles.map((role) => {
+                  roleGroupOrder.map((role) => {
                     const group = filtered.filter((m) => m.role === role)
                     if (group.length === 0) return null
                     const isCollapsed = collapsed.has(role)
@@ -376,7 +374,9 @@ export function MemberTable({ members }: MemberTableProps) {
           <div className="border-t border-border/60 bg-muted/20 px-4 py-2">
             <p className="text-xs text-muted-foreground">
               共 {filtered.length} 位
-              {selectedRole !== ALL_ROLES ? ROLE_LABELS[selectedRole] : "成員"}
+              {selectedRole !== ALL_ROLES
+                ? (ROLE_LABELS[selectedRole] ?? selectedRole)
+                : "成員"}
             </p>
           </div>
         )}

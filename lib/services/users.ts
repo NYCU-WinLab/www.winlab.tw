@@ -49,27 +49,6 @@ export const ROLE_LABELS: Record<MemberRole, string> = {
   pending: "待確認",
 }
 
-/**
- * Keycloak's `role` attribute is free text — the realm declares it with no
- * validation, so anything can arrive here: a Chinese label typed by hand, a
- * value with a stray leading space, a role that no longer exists.
- *
- * This used to be `attrs.role?.[0] as MemberRole`, which asserted the problem
- * away. The cost landed in the directory: `member-table.tsx` renders by mapping
- * over ROLE_ORDER, so a member whose role wasn't in that list belonged to no
- * group and was never rendered at all — not blank, absent, with nothing in the
- * console. Six members were invisible this way until the attributes were
- * cleaned up on 2026-08-12.
- *
- * Falling back to "pending" (待確認) keeps them on the page. Being listed as
- * unconfirmed is a visible, self-explaining degradation; disappearing is not.
- */
-function toMemberRole(value: string | undefined): MemberRole {
-  return value && (ROLE_ORDER as readonly string[]).includes(value)
-    ? (value as MemberRole)
-    : "pending"
-}
-
 export const ROLE_ORDER: MemberRole[] = [
   "professor",
   "phd",
@@ -79,6 +58,24 @@ export const ROLE_ORDER: MemberRole[] = [
   "alumni",
   "pending",
 ]
+
+/**
+ * Keycloak's `role` attribute has no validation, so any string can arrive.
+ * Unrecognised values become "pending" (待確認) rather than being asserted
+ * through as MemberRole — a visible degradation instead of a row that vanishes
+ * from the directory. Cleaning up bad data doesn't retire this: one stray
+ * leading space brings it back.
+ *
+ * Checked against ROLE_LABELS because only that is a Record<MemberRole, …> the
+ * compiler keeps exhaustive — ROLE_ORDER can silently lag a newly added role.
+ * `Object.hasOwn`, not `in`, so a role named "toString" can't match via the
+ * prototype chain.
+ */
+function toMemberRole(value: string | undefined): MemberRole {
+  return value && Object.hasOwn(ROLE_LABELS, value)
+    ? (value as MemberRole)
+    : "pending"
+}
 
 const USERS_CACHE_TTL_MS = 5 * 60 * 1000
 
