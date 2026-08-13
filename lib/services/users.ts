@@ -49,6 +49,27 @@ export const ROLE_LABELS: Record<MemberRole, string> = {
   pending: "待確認",
 }
 
+/**
+ * Keycloak's `role` attribute is free text — the realm declares it with no
+ * validation, so anything can arrive here: a Chinese label typed by hand, a
+ * value with a stray leading space, a role that no longer exists.
+ *
+ * This used to be `attrs.role?.[0] as MemberRole`, which asserted the problem
+ * away. The cost landed in the directory: `member-table.tsx` renders by mapping
+ * over ROLE_ORDER, so a member whose role wasn't in that list belonged to no
+ * group and was never rendered at all — not blank, absent, with nothing in the
+ * console. Six members were invisible this way until the attributes were
+ * cleaned up on 2026-08-12.
+ *
+ * Falling back to "pending" (待確認) keeps them on the page. Being listed as
+ * unconfirmed is a visible, self-explaining degradation; disappearing is not.
+ */
+function toMemberRole(value: string | undefined): MemberRole {
+  return value && (ROLE_ORDER as readonly string[]).includes(value)
+    ? (value as MemberRole)
+    : "pending"
+}
+
 export const ROLE_ORDER: MemberRole[] = [
   "professor",
   "phd",
@@ -149,7 +170,7 @@ export async function getDirectoryMembers(): Promise<DirectoryMember[]> {
         nameEn,
         email: u.email ?? "",
         phone: attrs.phone?.[0],
-        role: (attrs.role?.[0] as MemberRole) ?? "pending",
+        role: toMemberRole(attrs.role?.[0]),
         position: attrs.position?.[0],
         gravatarUrl: gravatarUrl(u.email),
         github: attrs.github?.[0],

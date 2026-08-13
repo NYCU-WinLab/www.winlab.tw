@@ -180,9 +180,16 @@ export function MemberTable({ members }: MemberTableProps) {
       .sort((a, b) => a.name.localeCompare(b.name, "zh-TW"))
   }, [members, query, selectedRole])
 
+  // Drives both the filter chips and the table's group order. Roles outside
+  // ROLE_ORDER are appended rather than dropped: this component receives
+  // `members` as a prop, so it cannot assume the service layer normalised them
+  // (it does — see toMemberRole — but a second caller might not). Dropping an
+  // unknown role here removes the member from the table with no other trace.
   const availableRoles = useMemo(() => {
     const present = new Set(members.map((m) => m.role))
-    return ROLE_ORDER.filter((r) => present.has(r))
+    const known = ROLE_ORDER.filter((r) => present.has(r))
+    const unknown = [...present].filter((r) => !ROLE_ORDER.includes(r))
+    return [...known, ...unknown]
   }, [members])
 
   const renderYearRows = (
@@ -264,7 +271,7 @@ export function MemberTable({ members }: MemberTableProps) {
                   : "bg-muted text-muted-foreground hover:text-foreground"
               }`}
             >
-              {ROLE_LABELS[role]}
+              {ROLE_LABELS[role] ?? role}
             </button>
           ))}
         </div>
@@ -320,7 +327,7 @@ export function MemberTable({ members }: MemberTableProps) {
                     filtered.map((m) => <MemberRow key={m.id} member={m} />)
                   )
                 ) : (
-                  ROLE_ORDER.map((role) => {
+                  availableRoles.map((role) => {
                     const group = filtered.filter((m) => m.role === role)
                     if (group.length === 0) return null
                     const isCollapsed = collapsed.has(role)
@@ -338,7 +345,7 @@ export function MemberTable({ members }: MemberTableProps) {
                                 }`}
                               />
                               <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                                {ROLE_LABELS[role]}
+                                {ROLE_LABELS[role] ?? role}
                               </span>
                               <span className="text-xs text-muted-foreground/60">
                                 {group.length}
