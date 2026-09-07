@@ -183,6 +183,11 @@ export function MemberTable({ members }: MemberTableProps) {
   // Unknown roles are appended, not dropped: dropping one removes the member
   // from the table while the footer still counts them via `filtered.length`, so
   // the page contradicts itself instead of erroring.
+  //
+  // No raw Keycloak value reaches here today — `toMemberRole` normalises every
+  // unrecognised role to `pending` upstream — so what this actually guards is
+  // ROLE_ORDER lagging ROLE_LABELS when a MemberRole is added. Not dead code;
+  // just not the layer that catches malformed attributes.
   const roleGroupOrder = useMemo(() => {
     const present = new Set(members.map((m) => m.role))
     const known = ROLE_ORDER.filter((r) => present.has(r))
