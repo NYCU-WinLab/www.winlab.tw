@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { motion } from "motion/react"
+import * as m from "motion/react-m"
 
 import { useInView } from "@/hooks/use-in-view"
 
@@ -15,23 +15,23 @@ export function About() {
       ref={ref as React.RefObject<HTMLElement>}
       className="flex h-dvh flex-col items-center justify-center gap-8 px-6 text-center"
     >
-      <motion.p
+      <m.h1
         initial={{ opacity: 0, y: 16 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ ...spring, delay: 0 }}
-        className="text-sm tracking-widest text-muted-foreground uppercase"
+        className="text-sm font-normal tracking-widest text-muted-foreground uppercase"
       >
         Wireless Internet Laboratory
-      </motion.p>
-      <motion.h2
+      </m.h1>
+      <m.h2
         initial={{ opacity: 0, y: 16 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ ...spring, delay: 0.1 }}
         className="text-3xl font-medium"
       >
         We deploy on Fridays.
-      </motion.h2>
-      <motion.div
+      </m.h2>
+      <m.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={inView ? { opacity: 1, scale: 1 } : {}}
         transition={{ ...spring, delay: 0.2 }}
@@ -43,24 +43,24 @@ export function About() {
           height={180}
           className="w-full max-w-xs rounded-lg sm:max-w-sm"
         />
-      </motion.div>
-      <motion.p
+      </m.div>
+      <m.p
         initial={{ opacity: 0, y: 16 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ ...spring, delay: 0.3 }}
         className="text-sm tracking-wide text-muted-foreground"
       >
         5G/6G · Cloud-Native · AI Agents
-      </motion.p>
-      <motion.p
+      </m.p>
+      <m.p
         initial={{ opacity: 0, y: 16 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ ...spring, delay: 0.4 }}
         className="text-center text-base text-muted-foreground"
       >
         A systems lab that builds things that actually work.
-      </motion.p>
-      <motion.p
+      </m.p>
+      <m.p
         initial={{ opacity: 0, y: 16 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ ...spring, delay: 0.5 }}
@@ -76,7 +76,7 @@ export function About() {
           Office of AI Affairs · 人工智慧專責辦公室
         </a>
         .
-      </motion.p>
+      </m.p>
     </section>
   )
 }

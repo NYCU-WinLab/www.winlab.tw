@@ -16,18 +16,27 @@ Add shadcn components: `bunx shadcn@latest add <component>`
 
 ## Architecture
 
-Single-page lab website: Hero → About → Professor → Members → Find the Lab.
+Single-page lab website: Hero → About → Research → Professor → Members → Find the Lab.
 
 ### Three-layer data pattern (Supabase UI style)
 
 ```
 lib/services/   → business logic, Keycloak queries (no React)
-hooks/          → React state wrappers (useUsers, useInView)
+hooks/          → React state wrappers (useInView)
 components/     → pure presentation, receives data via props/hooks
 app/api/        → Next.js route handlers bridging client ↔ service
 ```
 
-Data flow for Members: `Keycloak → lib/keycloak.ts → lib/services/users.ts → app/api/users/route.ts → hooks/use-users.ts → components/users/user-grid.tsx`
+Data flow for Members: `Keycloak → lib/keycloak.ts → lib/services/users.ts (getPublicUsers) → app/page.tsx (server component) → components/users/members.tsx → user-grid.tsx`
+
+- `app/page.tsx` is `force-static` with `revalidate = 3600` (ISR). Members are in the SSR HTML; the page regenerates in the background at most once an hour. `force-static` is required because the Keycloak admin client sends an Authorization header, which Next would otherwise treat as a dynamic signal.
+- Gravatar existence is resolved server-side in `lib/services/users.ts` (one HEAD per email, memoised 24h). `gravatarUrl` is only set when an image exists, so the browser never fires a known-404 request and the email MD5 is never exposed for members without an avatar.
+- `/api/users` serves the same `PublicUser` projection for any external consumer. Nothing in this app fetches it any more.
+- CI builds without Keycloak env: `hasKeycloakConfig()` short-circuits to an empty list so the build still passes.
+
+### Research section
+
+`components/research.tsx` holds `RESEARCH_AREAS`, sourced from Prof. Tseng's Google Site (research interests + project list). Keep `components/json-ld.tsx`'s `knowsAbout` in step when editing it.
 
 ### Hero ASCII art system
 
@@ -39,7 +48,13 @@ Data flow for Members: `Keycloak → lib/keycloak.ts → lib/services/users.ts �
 
 ### Animations
 
-All animations use `motion/react` with consistent spring config: `{ type: "spring", stiffness: 200, damping: 20 }`. Scroll-triggered via `hooks/use-in-view.ts` (IntersectionObserver, fires once).
+Scroll-triggered sections use `motion/react-m` (`import * as m from "motion/react-m"`) with consistent spring config: `{ type: "spring", stiffness: 200, damping: 20 }`, triggered via `hooks/use-in-view.ts` (IntersectionObserver, fires once). `components/page-transition.tsx` wraps the app in `<LazyMotion features={domAnimation} strict>`, so importing `motion` from `motion/react` anywhere throws at runtime: always use `m.*`.
+
+Header, footer and uptime use the CSS `animate-fade-in` class from `globals.css` instead of motion, so the header text (the LCP element) paints before hydration.
+
+### Map embed
+
+`components/find-us.tsx` mounts the Google Maps iframe only after the visitor clicks "Load interactive map". The embed costs about 450 KiB of script, more than the rest of the page.
 
 ### Theming
 

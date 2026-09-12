@@ -2,7 +2,7 @@
 
 import { ExternalLink, Mail, MapPin } from "lucide-react"
 import Image from "next/image"
-import { motion } from "motion/react"
+import * as m from "motion/react-m"
 
 import { useInView } from "@/hooks/use-in-view"
 
@@ -26,7 +26,7 @@ export function Professor() {
       className="flex h-dvh items-center justify-center px-6"
     >
       <div className="flex max-w-3xl flex-col items-center gap-10 md:flex-row md:items-start md:gap-16">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, x: -32 }}
           animate={inView ? { opacity: 1, x: 0 } : {}}
           transition={{ ...spring }}
@@ -39,10 +39,10 @@ export function Professor() {
             height={240}
             className="h-36 w-36 rounded-full object-cover sm:h-60 sm:w-60"
           />
-        </motion.div>
+        </m.div>
 
         <div className="flex flex-col items-center gap-6 md:items-start">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, x: 32 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ ...spring, delay: 0.1 }}
@@ -53,11 +53,11 @@ export function Professor() {
             <p className="mt-2 text-center text-base text-muted-foreground md:text-left">
               曾建超 — Distinguished Professor, NYCU
             </p>
-          </motion.div>
+          </m.div>
 
           <div className="flex flex-wrap justify-center gap-2 md:justify-start">
             {RESEARCH.map((tag, i) => (
-              <motion.span
+              <m.span
                 key={tag}
                 initial={{ opacity: 0, y: 8 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -65,11 +65,11 @@ export function Professor() {
                 className="rounded-full border border-border px-4 py-1.5 text-sm"
               >
                 {tag}
-              </motion.span>
+              </m.span>
             ))}
           </div>
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 16 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ ...spring, delay: 0.5 }}
@@ -95,7 +95,7 @@ export function Professor() {
               <ExternalLink className="size-3.5" />
               Personal Website
             </a>
-          </motion.div>
+          </m.div>
         </div>
       </div>
     </section>

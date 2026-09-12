@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useTheme } from "next-themes"
-import { motion } from "motion/react"
 
 import {
   Tooltip,
@@ -23,20 +22,11 @@ export function Header() {
     <header className="fixed top-0 left-0 z-50 flex w-full items-center justify-between bg-background/70 px-4 py-3 backdrop-blur-md sm:px-6 sm:py-4">
       <Tooltip>
         <TooltipTrigger asChild>
-          <motion.div
-            initial={{ opacity: 0, x: -16 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{
-              type: "spring",
-              stiffness: 200,
-              damping: 20,
-              delay: 0.2,
-            }}
-          >
+          <div className="animate-fade-in">
             <Link href="/" className="text-xs text-muted-foreground">
               WinLab
             </Link>
-          </motion.div>
+          </div>
         </TooltipTrigger>
         <TooltipContent side="bottom" align="start">
           Wireless Internet Laboratory
@@ -45,16 +35,7 @@ export function Header() {
       <div className="flex items-center gap-5">
         <Tooltip>
           <TooltipTrigger asChild>
-            <motion.div
-              initial={{ opacity: 0, x: 16 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{
-                type: "spring",
-                stiffness: 200,
-                damping: 20,
-                delay: 0.15,
-              }}
-            >
+            <div className="animate-fade-in">
               <Link
                 href="/directory"
                 className="group flex items-center text-xs text-muted-foreground transition-colors hover:text-foreground"
@@ -64,7 +45,7 @@ export function Header() {
                   ↗
                 </span>
               </Link>
-            </motion.div>
+            </div>
           </TooltipTrigger>
           <TooltipContent side="bottom" align="end">
             Lab member directory
@@ -73,16 +54,7 @@ export function Header() {
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <motion.div
-              initial={{ opacity: 0, x: 16 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{
-                type: "spring",
-                stiffness: 200,
-                damping: 20,
-                delay: 0.2,
-              }}
-            >
+            <div className="animate-fade-in">
               <Link
                 href="https://portal.winlab.tw"
                 target="_blank"
@@ -94,7 +66,7 @@ export function Header() {
                   ↗
                 </span>
               </Link>
-            </motion.div>
+            </div>
           </TooltipTrigger>
           <TooltipContent side="bottom" align="end">
             WinLab Portal
@@ -103,16 +75,8 @@ export function Header() {
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <motion.button
-              initial={{ opacity: 0, x: 16 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{
-                type: "spring",
-                stiffness: 200,
-                damping: 20,
-                delay: 0.2,
-              }}
-              className="cursor-pointer text-xs text-muted-foreground"
+            <button
+              className="animate-fade-in cursor-pointer text-xs text-muted-foreground"
               onClick={() =>
                 setTheme(resolvedTheme === "dark" ? "light" : "dark")
               }
@@ -122,7 +86,7 @@ export function Header() {
                   ? "Light"
                   : "Dark"
                 : "\u00A0"}
-            </motion.button>
+            </button>
           </TooltipTrigger>
           <TooltipContent side="bottom" align="end">
             {mounted &&

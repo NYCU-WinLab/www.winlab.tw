@@ -12,6 +12,11 @@ export async function getKeycloakAdmin() {
     client = new KcAdminClient({
       baseUrl: process.env.KEYCLOAK_URL!,
       realmName: process.env.KEYCLOAK_REALM!,
+      // Never let Next's data cache hold the token response or the admin user
+      // dump, whichever segment these calls run under. app/page.tsx also sets
+      // fetchCache = "force-no-store"; this covers the route handlers and
+      // /directory as well.
+      requestOptions: { cache: "no-store" },
     })
 
     await client.auth({

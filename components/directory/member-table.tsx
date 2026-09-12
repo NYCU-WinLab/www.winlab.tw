@@ -73,11 +73,14 @@ function MemberRow({ member }: { member: DirectoryMember }) {
       <td className="py-3 pr-3 pl-4">
         <div className="flex items-center gap-3">
           <Avatar className="h-8 w-8 shrink-0 rounded-md">
-            <AvatarImage
-              src={member.gravatarUrl}
-              alt={member.name}
-              className="rounded-md object-cover"
-            />
+            {member.gravatarUrl && (
+              <AvatarImage
+                src={member.gravatarUrl}
+                alt={member.name}
+                loading="lazy"
+                className="rounded-md object-cover"
+              />
+            )}
             <AvatarFallback className="rounded-md text-xs font-medium">
               {getInitials(member.name)}
             </AvatarFallback>
