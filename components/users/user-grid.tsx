@@ -1,11 +1,11 @@
 "use client"
 
-import { motion } from "motion/react"
+import * as m from "motion/react-m"
 
 import { useInView } from "@/hooks/use-in-view"
 import { UserCard } from "@/components/users/user-card"
 
-import type { PublicUser } from "@/hooks/use-users"
+import type { PublicUser } from "@/lib/services/users"
 
 const spring = { type: "spring" as const, stiffness: 200, damping: 20 }
 
@@ -32,24 +32,24 @@ function YearSection({ year, users }: YearGroup) {
 
   return (
     <section ref={ref as React.RefObject<HTMLElement>}>
-      <motion.h2
+      <m.h2
         initial={{ opacity: 0, y: 12 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={spring}
         className="mb-8 text-center text-sm font-medium text-muted-foreground"
       >
         Class of {year}
-      </motion.h2>
+      </m.h2>
       <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-10 md:grid-cols-4 lg:grid-cols-5">
         {users.map((user, i) => (
-          <motion.div
+          <m.div
             key={user.id}
             initial={{ opacity: 0, y: 16 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ ...spring, delay: i * 0.04 }}
           >
             <UserCard user={user} />
-          </motion.div>
+          </m.div>
         ))}
       </div>
     </section>

@@ -2,13 +2,21 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-import type { PublicUser } from "@/hooks/use-users"
+import type { PublicUser } from "@/lib/services/users"
 
 export function UserCard({ user }: { user: PublicUser }) {
   return (
     <div className="flex flex-col items-center gap-3">
       <Avatar className="size-20 sm:size-28">
-        <AvatarImage src={user.gravatarUrl} alt={user.displayName} />
+        {/* gravatarUrl is only present when the server confirmed an image
+            exists, so this never issues a request that is known to 404. */}
+        {user.gravatarUrl && (
+          <AvatarImage
+            src={user.gravatarUrl}
+            alt={user.displayName}
+            loading="lazy"
+          />
+        )}
         <AvatarFallback className="text-2xl">
           {user.displayName.slice(0, 1)}
         </AvatarFallback>

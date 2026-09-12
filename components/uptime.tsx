@@ -1,7 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { motion } from "motion/react"
+import { useSyncExternalStore } from "react"
 
 import {
   Tooltip,
@@ -26,33 +25,37 @@ function formatFull(ms: number) {
   return `${y}y ${rd}d ${h}h ${m}m ${sec}s`
 }
 
+function subscribe(onTick: () => void) {
+  const interval = window.setInterval(onTick, 1000)
+  return () => window.clearInterval(interval)
+}
+
+function getNow() {
+  return Math.floor(Date.now() / 1000) * 1000
+}
+
+function getServerNow() {
+  return 0
+}
+
 export function Uptime() {
-  const [now, setNow] = useState(0)
+  // The value depends on the client clock, so it cannot be prerendered without
+  // a hydration mismatch. The server snapshot is 0 and renders nothing, which
+  // removes the visible "uptime: 0d" placeholder the static HTML used to carry;
+  // the client snapshot is correct from the first post-hydration render.
+  const now = useSyncExternalStore(subscribe, getNow, getServerNow)
 
-  useEffect(() => {
-    const interval = window.setInterval(() => setNow(Date.now()), 1000)
-    return () => window.clearInterval(interval)
-  }, [])
+  if (now === 0) return null
 
-  const elapsed = now === 0 ? 0 : now - ORIGIN
+  const elapsed = now - ORIGIN
 
   return (
-    <div className="fixed bottom-0 left-0 z-50 hidden px-4 py-3 sm:block sm:p-6">
+    <div className="animate-fade-in fixed bottom-0 left-0 z-50 hidden px-4 py-3 sm:block sm:p-6">
       <Tooltip>
         <TooltipTrigger asChild>
-          <motion.span
-            initial={{ opacity: 0, x: -16 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{
-              type: "spring",
-              stiffness: 200,
-              damping: 20,
-              delay: 0.4,
-            }}
-            className="cursor-default text-xs text-muted-foreground tabular-nums"
-          >
+          <span className="cursor-default text-xs text-muted-foreground tabular-nums">
             uptime: {formatDays(elapsed)}
-          </motion.span>
+          </span>
         </TooltipTrigger>
         <TooltipContent side="top" align="start">
           <span className="tabular-nums">{formatFull(elapsed)}</span>

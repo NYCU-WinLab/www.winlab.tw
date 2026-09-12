@@ -1,24 +1,46 @@
-"use client"
-
-import Link from "next/link"
-import { Loader2 } from "lucide-react"
-import { motion } from "motion/react"
-
-import { useInView } from "@/hooks/use-in-view"
 import { About } from "@/components/about"
 import { FindUs } from "@/components/find-us"
 import { Hero } from "@/components/hero"
 import { JsonLd } from "@/components/json-ld"
 import { Professor } from "@/components/professor"
-import { UserGrid } from "@/components/users/user-grid"
-import { useUsers } from "@/hooks/use-users"
+import { Research } from "@/components/research"
+import { Members } from "@/components/users/members"
+import {
+  getPublicUsers,
+  hasKeycloakConfig,
+  type PublicUser,
+} from "@/lib/services/users"
 
-export default function Page() {
-  const { users, isLoading, error } = useUsers()
-  const { ref: membersRef, inView: membersInView } = useInView()
+// Members are rendered on the server and the page is regenerated in the
+// background at most once an hour (ISR). Before this the list was fetched from
+// the browser after hydration, so the SSR HTML had an empty Members section
+// and every visitor paid for a Keycloak round-trip.
+export const revalidate = 3600
+// The Keycloak admin client sends an Authorization header, which Next treats as
+// a dynamic signal and would otherwise flip this route to per-request
+// rendering. force-static keeps it prerendered; revalidate above sets the ISR
+// window.
+export const dynamic = "force-static"
+
+async function loadMembers(): Promise<{
+  users: PublicUser[]
+  error: boolean
+}> {
+  // CI builds without Keycloak env — degrade to an empty list rather than fail
+  // the build. Vercel has the env, so production is regenerated with data.
+  if (!hasKeycloakConfig()) return { users: [], error: true }
+  try {
+    return { users: await getPublicUsers(), error: false }
+  } catch {
+    return { users: [], error: true }
+  }
+}
+
+export default async function Page() {
+  const { users, error } = await loadMembers()
 
   return (
-    <>
+    <main>
       {/* Organisation schema belongs on the landing page, not on every
           route — /directory is noindex, and keeping this out of the root
           layout means its inline <script> never has to satisfy the stricter
@@ -29,57 +51,13 @@ export default function Page() {
 
       <About />
 
+      <Research />
+
       <Professor />
 
-      <div className="mx-auto max-w-5xl px-4 py-6 pb-24 sm:px-6">
-        <motion.h1
-          ref={membersRef as React.RefObject<HTMLHeadingElement>}
-          initial={{ opacity: 0, y: 16 }}
-          animate={membersInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ type: "spring", stiffness: 200, damping: 20 }}
-          className="mb-8 text-center text-2xl font-medium sm:text-3xl"
-        >
-          Members
-        </motion.h1>
-
-        {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="size-5 animate-spin text-muted-foreground" />
-          </div>
-        ) : error ? (
-          <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">
-            {error}
-          </div>
-        ) : (
-          <UserGrid users={users} />
-        )}
-
-        {!isLoading && !error && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={membersInView ? { opacity: 1 } : {}}
-            transition={{
-              type: "spring",
-              stiffness: 200,
-              damping: 20,
-              delay: 0.4,
-            }}
-            className="mt-10 flex justify-center"
-          >
-            <Link
-              href="/directory"
-              className="group flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
-            >
-              <span className="transition-transform duration-150 group-hover:translate-x-0.5">
-                →
-              </span>
-              <span>full directory</span>
-            </Link>
-          </motion.div>
-        )}
-      </div>
+      <Members users={users} error={error} />
 
       <FindUs />
-    </>
+    </main>
   )
 }

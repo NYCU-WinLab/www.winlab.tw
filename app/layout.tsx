@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   authors: [{ name: "WinLab, NYCU" }],
   openGraph: {
     type: "website",
-    locale: "zh_TW",
+    locale: "en_US",
     url: "https://www.winlab.tw",
     siteName: "WinLab",
     title: "WinLab — Wireless Internet Laboratory",
@@ -84,7 +84,7 @@ export default async function RootLayout({
 
   return (
     <html
-      lang="zh-TW"
+      lang="en"
       suppressHydrationWarning
       className={`${fontMono.variable} font-mono antialiased`}
     >

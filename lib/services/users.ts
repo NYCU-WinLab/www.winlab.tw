@@ -12,7 +12,18 @@ export type KeycloakUser = {
   enabled: boolean
   createdTimestamp: number
   attributes: Record<string, string | undefined>
-  gravatarUrl: string
+  /** Only set when Gravatar actually has an image for this email. */
+  gravatarUrl?: string
+}
+
+/** The shape the public landing page and /api/users expose. No email, no hash
+ *  for members without an avatar: the MD5 in a Gravatar URL is reversible
+ *  against a known address pattern, so it is only sent when it buys something. */
+export type PublicUser = {
+  id: string
+  displayName: string
+  gravatarUrl?: string
+  admissionYear?: string
 }
 
 export type MemberRole =
@@ -32,7 +43,7 @@ export type DirectoryMember = {
   phone?: string
   role: MemberRole
   position?: string
-  gravatarUrl: string
+  gravatarUrl?: string
   github?: string
   office?: string
   researchAreas: string[]
@@ -107,11 +118,88 @@ let directoryCache:
     }
   | undefined
 
-function gravatarUrl(email?: string) {
-  const hash = email
-    ? createHash("md5").update(email.trim().toLowerCase()).digest("hex")
-    : "0"
+/**
+ * Gravatar existence is resolved server-side so the browser never fires a
+ * request that is known to 404. Before this, the landing page issued one
+ * `d=404` request per member (263 at the time, 163 of them 404s) and that
+ * alone was the largest cost in the mobile Lighthouse run.
+ *
+ * Results are memoised per hash for a day. A miss costs one HEAD request; a
+ * network failure is not cached, so it is retried on the next refresh rather
+ * than hiding an avatar for 24 hours.
+ */
+const GRAVATAR_CACHE_TTL_MS = 24 * 60 * 60 * 1000
+const GRAVATAR_CONCURRENCY = 16
+const GRAVATAR_TIMEOUT_MS = 5000
+
+const gravatarCache = new Map<string, { exists: boolean; expiresAt: number }>()
+
+function gravatarHash(email: string) {
+  return createHash("md5").update(email.trim().toLowerCase()).digest("hex")
+}
+
+function gravatarUrlFor(hash: string) {
   return `https://gravatar.com/avatar/${hash}?d=404&s=160`
+}
+
+async function gravatarExists(hash: string): Promise<boolean | undefined> {
+  const now = Date.now()
+  const cached = gravatarCache.get(hash)
+  if (cached && cached.expiresAt > now) return cached.exists
+
+  try {
+    const res = await fetch(gravatarUrlFor(hash), {
+      method: "HEAD",
+      cache: "no-store",
+      signal: AbortSignal.timeout(GRAVATAR_TIMEOUT_MS),
+    })
+    const exists = res.ok
+    gravatarCache.set(hash, {
+      exists,
+      expiresAt: now + GRAVATAR_CACHE_TTL_MS,
+    })
+    return exists
+  } catch {
+    return undefined
+  }
+}
+
+/**
+ * Resolves a Gravatar URL for each email in `emails`, or undefined when there
+ * is no image (or no email). Bounded concurrency so a cold cache does not open
+ * a few hundred sockets at once.
+ */
+async function resolveGravatars(
+  emails: (string | undefined)[]
+): Promise<(string | undefined)[]> {
+  const results: (string | undefined)[] = new Array(emails.length)
+  let next = 0
+
+  async function worker() {
+    while (next < emails.length) {
+      const i = next++
+      const email = emails[i]
+      if (!email) continue
+      const hash = gravatarHash(email)
+      results[i] = (await gravatarExists(hash))
+        ? gravatarUrlFor(hash)
+        : undefined
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: GRAVATAR_CONCURRENCY }, () => worker())
+  )
+  return results
+}
+
+export function hasKeycloakConfig() {
+  return Boolean(
+    process.env.KEYCLOAK_URL &&
+    process.env.KEYCLOAK_REALM &&
+    process.env.KEYCLOAK_ADMIN_CLIENT_ID &&
+    process.env.KEYCLOAK_ADMIN_CLIENT_SECRET
+  )
 }
 
 function flattenAttributes(
@@ -128,19 +216,20 @@ async function fetchUsers(): Promise<KeycloakUser[]> {
     max: -1,
   })
 
-  return users
-    .filter((u) => u.enabled)
-    .map((u) => ({
-      id: u.id!,
-      username: u.username ?? "",
-      email: u.email,
-      firstName: u.firstName,
-      lastName: u.lastName,
-      enabled: u.enabled ?? false,
-      createdTimestamp: u.createdTimestamp ?? 0,
-      attributes: flattenAttributes(u.attributes as Record<string, string[]>),
-      gravatarUrl: gravatarUrl(u.email),
-    }))
+  const enabled = users.filter((u) => u.enabled)
+  const gravatars = await resolveGravatars(enabled.map((u) => u.email))
+
+  return enabled.map((u, i) => ({
+    id: u.id!,
+    username: u.username ?? "",
+    email: u.email,
+    firstName: u.firstName,
+    lastName: u.lastName,
+    enabled: u.enabled ?? false,
+    createdTimestamp: u.createdTimestamp ?? 0,
+    attributes: flattenAttributes(u.attributes as Record<string, string[]>),
+    gravatarUrl: gravatars[i],
+  }))
 }
 
 export async function getUsers(): Promise<KeycloakUser[]> {
@@ -157,6 +246,21 @@ export async function getUsers(): Promise<KeycloakUser[]> {
   return users
 }
 
+/**
+ * Landing-page projection of getUsers(). Used both by app/page.tsx (server
+ * render) and app/api/users/route.ts, so the two can never disagree on what is
+ * public.
+ */
+export async function getPublicUsers(): Promise<PublicUser[]> {
+  const users = await getUsers()
+  return users.map((u) => ({
+    id: u.id,
+    displayName: u.attributes.chinese_name ?? u.username,
+    gravatarUrl: u.gravatarUrl,
+    admissionYear: u.attributes.admissionYear,
+  }))
+}
+
 export async function getDirectoryMembers(): Promise<DirectoryMember[]> {
   const now = Date.now()
   if (directoryCache && directoryCache.expiresAt > now) {
@@ -170,10 +274,11 @@ export async function getDirectoryMembers(): Promise<DirectoryMember[]> {
   })
 
   const unrecognisedRoles = new Map<string, string>()
+  const enabled = users.filter((u) => u.enabled)
+  const gravatars = await resolveGravatars(enabled.map((u) => u.email))
 
-  const members = users
-    .filter((u) => u.enabled)
-    .map((u) => {
+  const members = enabled
+    .map((u, i) => {
       const attrs = (u.attributes as Record<string, string[]>) ?? {}
       const nameEn = [u.firstName, u.lastName].filter(Boolean).join(" ")
 
@@ -185,7 +290,7 @@ export async function getDirectoryMembers(): Promise<DirectoryMember[]> {
         phone: attrs.phone?.[0],
         role: toMemberRole(attrs.role?.[0], u.id!, unrecognisedRoles),
         position: attrs.position?.[0],
-        gravatarUrl: gravatarUrl(u.email),
+        gravatarUrl: gravatars[i],
         github: attrs.github?.[0],
         office: attrs.office?.[0],
         researchAreas: attrs.research_areas ?? [],
