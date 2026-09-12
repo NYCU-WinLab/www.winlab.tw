@@ -32,14 +32,14 @@ function YearSection({ year, users }: YearGroup) {
 
   return (
     <section ref={ref as React.RefObject<HTMLElement>}>
-      <m.h2
+      <m.h3
         initial={{ opacity: 0, y: 12 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={spring}
         className="mb-8 text-center text-sm font-medium text-muted-foreground"
       >
         Class of {year}
-      </m.h2>
+      </m.h3>
       <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-10 md:grid-cols-4 lg:grid-cols-5">
         {users.map((user, i) => (
           <m.div

@@ -15,14 +15,14 @@ export function About() {
       ref={ref as React.RefObject<HTMLElement>}
       className="flex h-dvh flex-col items-center justify-center gap-8 px-6 text-center"
     >
-      <m.p
+      <m.h1
         initial={{ opacity: 0, y: 16 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ ...spring, delay: 0 }}
-        className="text-sm tracking-widest text-muted-foreground uppercase"
+        className="text-sm font-normal tracking-widest text-muted-foreground uppercase"
       >
         Wireless Internet Laboratory
-      </m.p>
+      </m.h1>
       <m.h2
         initial={{ opacity: 0, y: 16 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}

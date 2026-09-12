@@ -5,6 +5,7 @@ import { JsonLd } from "@/components/json-ld"
 import { Professor } from "@/components/professor"
 import { Research } from "@/components/research"
 import { Members } from "@/components/users/members"
+import { emitErrorLog } from "@/lib/otel/log"
 import {
   getPublicUsers,
   hasKeycloakConfig,
@@ -21,18 +22,32 @@ export const revalidate = 3600
 // rendering. force-static keeps it prerendered; revalidate above sets the ISR
 // window.
 export const dynamic = "force-static"
+// `revalidate` alone would also make Next force-cache every fetch in this
+// segment for an hour, including the Keycloak token POST (a 300 s token) and
+// the raw admin user dump with every member's email. Neither belongs in the
+// data cache: the page HTML is the only thing that should be cached here.
+export const fetchCache = "force-no-store"
 
 async function loadMembers(): Promise<{
   users: PublicUser[]
   error: boolean
 }> {
-  // CI builds without Keycloak env — degrade to an empty list rather than fail
+  // CI builds without Keycloak env: degrade to an empty list rather than fail
   // the build. Vercel has the env, so production is regenerated with data.
   if (!hasKeycloakConfig()) return { users: [], error: true }
   try {
     return { users: await getPublicUsers(), error: false }
-  } catch {
-    return { users: [], error: true }
+  } catch (error) {
+    // With env present, a failed load must not ship a silently empty page:
+    // at build time this fails the deploy (the previous one stays live), and
+    // during ISR regeneration Next keeps serving the last good HTML.
+    emitErrorLog({
+      message: "Landing page member load failed",
+      attributes: {
+        "error.message": error instanceof Error ? error.message : String(error),
+      },
+    })
+    throw error
   }
 }
 

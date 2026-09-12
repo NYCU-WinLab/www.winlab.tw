@@ -125,8 +125,8 @@ let directoryCache:
  * alone was the largest cost in the mobile Lighthouse run.
  *
  * Results are memoised per hash for a day. A miss costs one HEAD request; a
- * network failure is not cached, so it is retried on the next refresh rather
- * than hiding an avatar for 24 hours.
+ * network failure or non-200/404 status is not cached, so it is retried on the
+ * next refresh rather than hiding an avatar for 24 hours.
  */
 const GRAVATAR_CACHE_TTL_MS = 24 * 60 * 60 * 1000
 const GRAVATAR_CONCURRENCY = 16
@@ -153,7 +153,11 @@ async function gravatarExists(hash: string): Promise<boolean | undefined> {
       cache: "no-store",
       signal: AbortSignal.timeout(GRAVATAR_TIMEOUT_MS),
     })
-    const exists = res.ok
+    // Only 200 and 404 are answers. Anything else (429, 5xx) is a transient
+    // failure: return "no avatar" for this render but do not cache it, or a
+    // rate-limit burst would hide avatars for a day.
+    if (res.status !== 200 && res.status !== 404) return undefined
+    const exists = res.status === 200
     gravatarCache.set(hash, {
       exists,
       expiresAt: now + GRAVATAR_CACHE_TTL_MS,
