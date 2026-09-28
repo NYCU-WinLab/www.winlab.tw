@@ -37,7 +37,7 @@ export function Professor() {
             alt="Prof. Chien-Chao Tseng"
             width={240}
             height={240}
-            className="h-36 w-36 rounded-full object-cover sm:h-60 sm:w-60"
+            className="h-36 w-36 rounded-full object-cover object-top sm:h-60 sm:w-60"
           />
         </m.div>
 
