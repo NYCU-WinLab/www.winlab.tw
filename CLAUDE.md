@@ -66,7 +66,7 @@ Header, footer and uptime use the CSS `animate-fade-in` class from `globals.css`
 - Tailwind CSS v4 with oklch color variables
 - shadcn/ui components in `components/ui/`, app components in `components/`
 - Keycloak user attributes are flattened from `Record<string, string[]>` to `Record<string, string | undefined>` in the service layer
-- Users filtered by `enabled: true` and grouped by `admissionYear` attribute (descending)
+- Users filtered by `enabled: true`, minus test accounts (a `test` token in the username, `isListed` in `lib/services/users.ts`), and grouped by `admissionYear` attribute (descending)
 
 ## Environment
 
