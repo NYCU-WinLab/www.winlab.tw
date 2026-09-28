@@ -206,6 +206,19 @@ export function hasKeycloakConfig() {
   )
 }
 
+/**
+ * Accounts that exist to try the lab's apps, not people: a "test" token in the
+ * username (test, test-master, winlab-test, winlab-test-master in 2026-09).
+ * They carry a real role, group and admission year so the apps treat them as
+ * members, which leaves the username as the one thing that sets them apart.
+ */
+const TEST_ACCOUNT = /(^|[-_.])test([-_.]|$)/i
+
+/** Enabled accounts that belong to people: the members every page lists. */
+function isListed(u: { enabled?: boolean; username?: string }) {
+  return Boolean(u.enabled) && !TEST_ACCOUNT.test(u.username ?? "")
+}
+
 function flattenAttributes(
   attrs?: Record<string, string[]>
 ): Record<string, string | undefined> {
@@ -220,10 +233,10 @@ async function fetchUsers(): Promise<KeycloakUser[]> {
     max: -1,
   })
 
-  const enabled = users.filter((u) => u.enabled)
-  const gravatars = await resolveGravatars(enabled.map((u) => u.email))
+  const listed = users.filter(isListed)
+  const gravatars = await resolveGravatars(listed.map((u) => u.email))
 
-  return enabled.map((u, i) => ({
+  return listed.map((u, i) => ({
     id: u.id!,
     username: u.username ?? "",
     email: u.email,
@@ -278,10 +291,10 @@ export async function getDirectoryMembers(): Promise<DirectoryMember[]> {
   })
 
   const unrecognisedRoles = new Map<string, string>()
-  const enabled = users.filter((u) => u.enabled)
-  const gravatars = await resolveGravatars(enabled.map((u) => u.email))
+  const listed = users.filter(isListed)
+  const gravatars = await resolveGravatars(listed.map((u) => u.email))
 
-  const members = enabled
+  const members = listed
     .map((u, i) => {
       const attrs = (u.attributes as Record<string, string[]>) ?? {}
       const nameEn = [u.firstName, u.lastName].filter(Boolean).join(" ")
