@@ -32,6 +32,10 @@ jobs:
 
       - run: bun run typecheck
 
+      - run: bun run format:check
+
+      - run: bun run tokens:check
+
       # No secrets needed: without Keycloak env the home page builds with an
       # empty member list.
       - run: bun run build

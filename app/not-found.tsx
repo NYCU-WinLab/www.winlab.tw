@@ -1,27 +1,26 @@
 import Link from "next/link"
 
-const ART = `
- ##    ###   ##
-#  #  #   # #  #
-#  #  #   # #  #
-####  #   # ####
-   #  #   #    #
-   #   ###     #
-`
+import { AppShell } from "@/components/app-shell"
 
 export default function NotFound() {
   return (
-    <div className="flex h-dvh flex-col items-center justify-center gap-8 px-6 text-center">
-      <pre className="text-4xl leading-tight font-bold">{ART}</pre>
-      <p className="text-sm text-muted-foreground">
-        this page doesn&apos;t exist — yet.
-      </p>
-      <Link
-        href="/"
-        className="text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
-      >
-        back to safety
-      </Link>
-    </div>
+    <AppShell
+      layout="spotlight"
+      breadcrumb={[
+        { label: "WinLab", href: "/", tip: "Wireless Internet Laboratory" },
+      ]}
+    >
+      <div className="flex flex-col items-center gap-4 text-center">
+        <h1 className="text-title font-medium">
+          This page doesn&apos;t exist, yet.
+        </h1>
+        <Link
+          href="/"
+          className="text-muted-foreground underline underline-offset-4 transition-colors duration-state hover:text-foreground"
+        >
+          Back to safety
+        </Link>
+      </div>
+    </AppShell>
   )
 }

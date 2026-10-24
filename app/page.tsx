@@ -1,4 +1,5 @@
 import { About } from "@/components/about"
+import { AppShell, CornerLink, CornerTip } from "@/components/app-shell"
 import { FindUs } from "@/components/find-us"
 import { Hero } from "@/components/hero"
 import { JsonLd } from "@/components/json-ld"
@@ -55,22 +56,35 @@ export default async function Page() {
   const { users, error } = await loadMembers()
 
   return (
-    <main>
+    <AppShell
+      layout="wide"
+      breadcrumb={[
+        { label: "WinLab", href: "/", tip: "Wireless Internet Laboratory" },
+      ]}
+      actions={
+        <>
+          <CornerTip tip="Member directory, for lab members" corner="top-right">
+            <CornerLink href="https://portal.winlab.tw/members">
+              Members ↗
+            </CornerLink>
+          </CornerTip>
+          <CornerTip tip="Lab services, for lab members" corner="top-right">
+            <CornerLink href="https://portal.winlab.tw">Portal ↗</CornerLink>
+          </CornerTip>
+        </>
+      }
+    >
       {/* Organisation schema belongs on the landing page, not on every
           route. */}
       <JsonLd />
-
       <Hero />
-
-      <About />
-
-      <Research />
-
-      <Professor />
-
-      <Members users={users} error={error} />
-
-      <FindUs />
-    </main>
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-24 py-24">
+        <About />
+        <Research />
+        <Professor />
+        <Members users={users} error={error} />
+        <FindUs />
+      </div>
+    </AppShell>
   )
 }
