@@ -3,6 +3,10 @@
 import * as React from "react"
 import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes"
 
+// The theme follows the system; there is no toggle in the interface. D
+// switches between light and dark (outside text fields) so a page can be
+// checked in both. next-themes puts .dark on <html>, which the base's dark
+// variant reads; give <html> suppressHydrationWarning.
 function ThemeProvider({
   children,
   ...props
@@ -10,7 +14,7 @@ function ThemeProvider({
   return (
     <NextThemesProvider
       attribute="class"
-      defaultTheme="dark"
+      defaultTheme="system"
       enableSystem
       disableTransitionOnChange
       {...props}

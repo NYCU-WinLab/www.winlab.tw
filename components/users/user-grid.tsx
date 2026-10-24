@@ -1,19 +1,10 @@
-"use client"
-
-import * as m from "motion/react-m"
-
-import { useInView } from "@/hooks/use-in-view"
-import { UserCard } from "@/components/users/user-card"
-
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import type { PublicUser } from "@/lib/services/users"
-
-const spring = { type: "spring" as const, stiffness: 200, damping: 20 }
 
 type YearGroup = { year: string; users: PublicUser[] }
 
 function groupByYear(users: PublicUser[]): YearGroup[] {
   const map = new Map<string, PublicUser[]>()
-
   for (const user of users) {
     const year = user.admissionYear
     if (!year) continue
@@ -21,57 +12,57 @@ function groupByYear(users: PublicUser[]): YearGroup[] {
     group.push(user)
     map.set(year, group)
   }
-
   return Array.from(map.entries())
     .sort(([a], [b]) => Number(b) - Number(a))
     .map(([year, users]) => ({ year, users }))
 }
 
-function YearSection({ year, users }: YearGroup) {
-  const { ref, inView } = useInView(0.1)
-
-  return (
-    <section ref={ref as React.RefObject<HTMLElement>}>
-      <m.h3
-        initial={{ opacity: 0, y: 12 }}
-        animate={inView ? { opacity: 1, y: 0 } : {}}
-        transition={spring}
-        className="mb-8 text-center text-sm font-medium text-muted-foreground"
-      >
-        Class of {year}
-      </m.h3>
-      <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-10 md:grid-cols-4 lg:grid-cols-5">
-        {users.map((user, i) => (
-          <m.div
-            key={user.id}
-            initial={{ opacity: 0, y: 16 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ ...spring, delay: i * 0.04 }}
-          >
-            <UserCard user={user} />
-          </m.div>
-        ))}
-      </div>
-    </section>
-  )
-}
-
+// One row per class, newest first: the year on the left, its members as
+// avatar and name.
 export function UserGrid({ users }: { users: PublicUser[] }) {
   const groups = groupByYear(users)
 
   if (groups.length === 0) {
     return (
-      <div className="py-12 text-center text-sm text-muted-foreground">
+      <p className="text-muted-foreground">
         No users with admission year found.
-      </div>
+      </p>
     )
   }
 
   return (
-    <div className="space-y-16">
+    <ul className="flex flex-col">
       {groups.map(({ year, users }) => (
-        <YearSection key={year} year={year} users={users} />
+        <li
+          key={year}
+          className="flex flex-col gap-3 border-b border-border py-4 sm:flex-row sm:gap-8"
+        >
+          <span className="w-24 shrink-0 text-muted-foreground tabular-nums">
+            Class of {year}
+          </span>
+          <ul className="grid flex-1 stagger-rise grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3 md:grid-cols-4">
+            {users.map((user) => (
+              <li key={user.id} className="flex min-w-0 items-center gap-3">
+                <Avatar>
+                  {/* gravatarUrl is only present when the server confirmed
+                      an image exists, so this never requests a known 404. */}
+                  {user.gravatarUrl && (
+                    <AvatarImage
+                      src={user.gravatarUrl}
+                      alt={user.displayName}
+                      loading="lazy"
+                    />
+                  )}
+                  <AvatarFallback>
+                    {user.displayName.slice(0, 1)}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="truncate">{user.displayName}</span>
+              </li>
+            ))}
+          </ul>
+        </li>
       ))}
-    </div>
+    </ul>
   )
 }

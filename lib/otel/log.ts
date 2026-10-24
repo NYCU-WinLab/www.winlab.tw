@@ -11,7 +11,7 @@ import {
  * Safe to call from any server-side path regardless of whether OTel was
  * actually wired up: when `OTEL_EXPORTER_OTLP_ENDPOINT` is unset (e.g. plain
  * `bun run dev`), `register()` in instrumentation.ts never runs, so
- * `@opentelemetry/api-logs` stays on its built-in no-op LoggerProvider —
+ * `@opentelemetry/api-logs` stays on its built-in no-op LoggerProvider ,
  * `logger.emit()` is then a harmless no-op, never a throw.
  */
 export function emitErrorLog(input: {

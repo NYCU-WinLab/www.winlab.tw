@@ -53,7 +53,12 @@ jobs:
           KEYCLOAK_ADMIN_CLIENT_ID: ${{ secrets.KEYCLOAK_ADMIN_CLIENT_ID }}
           KEYCLOAK_ADMIN_CLIENT_SECRET: ${{ secrets.KEYCLOAK_ADMIN_CLIENT_SECRET }}
           NEXT_TELEMETRY_DISABLED: "1"
-        run: bun run build
+          # The bottom-left corner shows this build's commit and links its run.
+          NEXT_PUBLIC_BUILD_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          export NEXT_PUBLIC_BUILD_SHA="${GITHUB_SHA::7}"
+          export NEXT_PUBLIC_BUILD_TIME="$(TZ=Asia/Taipei date '+%Y-%m-%d %H:%M')"
+          bun run build
 
       - name: Pack
         run: |

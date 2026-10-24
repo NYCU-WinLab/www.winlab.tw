@@ -64,7 +64,7 @@ export function Hero() {
     ctx.fillStyle = bg || (isLight ? "#ffffff" : "#000000")
     ctx.fillRect(0, 0, rect.width, rect.height)
 
-    // square cells — original SVG uses 12x12 grid
+    // square cells, original SVG uses 12x12 grid
     const cellSize = Math.min(rect.width / (COLS + 4), rect.height / (ROWS + 4))
     const cellW = cellSize
     const cellH = cellSize
@@ -91,7 +91,7 @@ export function Hero() {
       // wave: slow character density oscillation
       const wave = Math.sin(c.col * 0.4 + c.row * 0.3 + now * 0.7) * 1.5
 
-      // mouse proximity — star/cross shaped falloff
+      // mouse proximity, star/cross shaped falloff
       const dx = mx - x
       const dy = my - y
       const absDx = Math.abs(dx)
@@ -135,7 +135,7 @@ export function Hero() {
         glitchMapRef.current.delete(i)
       }
 
-      // color — both themes use blue/purple tones
+      // color, both themes use blue/purple tones
       let { r, g, b } = c
       if (isLight) {
         // darken the original blue/purple for white bg
@@ -180,7 +180,9 @@ export function Hero() {
   }, [])
 
   return (
-    <section className="animate-fade-in relative h-dvh bg-background">
+    // Full bleed: it fills the first screen behind the corners, outside the
+    // shell's padding.
+    <section className="relative -mx-6 -mt-24 h-svh bg-background">
       <canvas
         ref={canvasRef}
         className="h-full w-full"

@@ -12,7 +12,7 @@ bun run typecheck # tsc --noEmit
 bun run format   # Prettier
 ```
 
-Add shadcn components: `bunx shadcn@latest add <component>`
+Add components from the WinLab registry: `bunx shadcn@latest add @winlab/<name> -o`. `bun run tokens:check` and `bun run format:check` run in CI.
 
 ## Architecture
 
@@ -22,9 +22,7 @@ Single-page lab website: Hero → About → Research → Professor → Members �
 
 ```
 lib/services/   → business logic, Keycloak queries (no React)
-hooks/          → React state wrappers (useInView)
 components/     → pure presentation, receives data via props/hooks
-app/api/        → Next.js route handlers bridging client ↔ service
 ```
 
 Data flow for Members: `Keycloak → lib/keycloak.ts → lib/services/users.ts (getPublicUsers) → app/page.tsx (server component) → components/users/members.tsx → user-grid.tsx`
@@ -49,25 +47,23 @@ The site has no sign-in and no runtime secrets beyond the Keycloak admin client 
 - Glitch: rare random character swap held for ~0.5s
 - Charset density scale: `.:-=+*#%@`
 
-### Animations
+### Design
 
-Scroll-triggered sections use `motion/react-m` (`import * as m from "motion/react-m"`) with consistent spring config: `{ type: "spring", stiffness: 200, damping: 20 }`, triggered via `hooks/use-in-view.ts` (IntersectionObserver, fires once). `components/page-transition.tsx` wraps the app in `<LazyMotion features={domAnimation} strict>`, so importing `motion` from `motion/react` anywhere throws at runtime: always use `m.*`.
-
-Header, footer and uptime use the CSS `animate-fade-in` class from `globals.css` instead of motion, so the header text (the LCP element) paints before hydration.
+The site follows ui.winlab.tw (its DESIGN.md is the rulebook): `app-shell` corners (breadcrumb top left, Portal top right, build commit bottom left, © bottom right), `text-title` and `text-body` only, no cards, `section` blocks with a divider. About is the page's one `focus`; lists arrive with `stagger-rise`. The hero bleeds out of the shell's padding to fill the first screen. `tokens:check` exempts `components/hero.tsx` (canvas colors) and `app/opengraph-image.tsx` (next/og needs inline styles).
 
 ### Map embed
 
-`components/find-us.tsx` mounts the Google Maps iframe only after the visitor clicks "Load interactive map". The embed costs about 450 KiB of script, more than the rest of the page.
+`components/find-us.tsx` shows the Google Maps iframe with `loading="lazy"`: its script (about 450 KiB, more than the rest of the page) loads only when the map nears the viewport.
 
 ### Theming
 
-`next-themes` with `class` attribute strategy. Default: dark. Press `d` to toggle. Canvas hero reads background color from `getComputedStyle` to match theme. Light mode darkens ASCII art colors: `r*0.3, g*0.3, b*0.7`.
+The theme follows the system (`components/theme-provider.tsx`); D switches it. Canvas hero reads background color from `getComputedStyle` to match theme. Light mode darkens ASCII art colors: `r*0.3, g*0.3, b*0.7`.
 
 ## Conventions
 
 - Prettier: no semicolons, double quotes, 2-space indent, trailing comma es5
 - Tailwind CSS v4 with oklch color variables
-- shadcn/ui components in `components/ui/`, app components in `components/`
+- WinLab registry components in `components/ui/` and blocks in `components/`; app components next to them
 - Keycloak user attributes are flattened from `Record<string, string[]>` to `Record<string, string | undefined>` in the service layer
 - Users filtered by `enabled: true`, minus test accounts (a `test` token in the username, `isListed` in `lib/services/users.ts`), and grouped by `admissionYear` attribute (descending)
 
@@ -82,4 +78,4 @@ Runs on the Carrel machine `www` (tenant `winfra`) as a Next.js standalone serve
 - Every push to `main` runs `.github/workflows/carrel.yml`: it builds with the Keycloak repo secrets (the home page is prerendered with members), packs `.next/standalone` and ships it with `NYCU-WinLab/carrel-deploy`.
 - `carrel-deployd` on the machine switches the release and rolls back if `http://127.0.0.1:3000/` is unhealthy. Roll back by hand with the Carrel `app_rollback` tool.
 - Runtime secrets live in `/srv/apps/www/env` on the machine.
-- `request.url` holds the bind address behind the gateway, so absolute redirects use `publicOrigin()` from `lib/origin.ts`.
+- The build passes `NEXT_PUBLIC_BUILD_SHA`, `NEXT_PUBLIC_BUILD_TIME` and `NEXT_PUBLIC_BUILD_URL` for the bottom-left corner.

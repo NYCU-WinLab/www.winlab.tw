@@ -1,24 +1,24 @@
 import { trace } from "@opentelemetry/api"
 import type { Metadata } from "next"
-import { Geist_Mono } from "next/font/google"
+import {
+  Inter,
+  JetBrains_Mono,
+  Noto_Sans_JP,
+  Noto_Sans_TC,
+} from "next/font/google"
 import { headers } from "next/headers"
 
 import "./globals.css"
-import { Footer } from "@/components/footer"
-import { Header } from "@/components/header"
-import { Uptime } from "@/components/uptime"
-import { PageTransition } from "@/components/page-transition"
 import { ThemeProvider } from "@/components/theme-provider"
-import { TooltipProvider } from "@/components/ui/tooltip"
 import { getClientAttributionAttributes } from "@/lib/otel/attribution"
-
+import { cn } from "@/lib/utils"
 export const metadata: Metadata = {
   title: {
-    default: "WinLab — Wireless Internet Laboratory",
+    default: "WinLab: Wireless Internet Laboratory",
     template: "%s | WinLab",
   },
   description:
-    "We deploy on Fridays. 5G/6G · Cloud-Native · AI Agents — A systems lab that builds things that actually work.",
+    "We deploy on Fridays. 5G/6G, Cloud-Native, AI Agents. A systems lab that builds things that actually work.",
   keywords: [
     "WinLab",
     "Wireless Internet Laboratory",
@@ -40,15 +40,15 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://www.winlab.tw",
     siteName: "WinLab",
-    title: "WinLab — Wireless Internet Laboratory",
+    title: "WinLab: Wireless Internet Laboratory",
     description:
-      "We deploy on Fridays. 5G/6G · Cloud-Native · AI Agents — A systems lab that builds things that actually work.",
+      "We deploy on Fridays. 5G/6G, Cloud-Native, AI Agents. A systems lab that builds things that actually work.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "WinLab — Wireless Internet Laboratory",
+    title: "WinLab: Wireless Internet Laboratory",
     description:
-      "We deploy on Fridays. 5G/6G · Cloud-Native · AI Agents — A systems lab that builds things that actually work.",
+      "We deploy on Fridays. 5G/6G, Cloud-Native, AI Agents. A systems lab that builds things that actually work.",
   },
   robots: {
     index: true,
@@ -57,9 +57,20 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.winlab.tw"),
 }
 
-const fontMono = Geist_Mono({
+// The font variables the WinLab base expects; the stack order lives in
+// globals.css.
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
+const notoSansJp = Noto_Sans_JP({
   subsets: ["latin"],
-  variable: "--font-mono",
+  variable: "--font-noto-sans-jp",
+})
+const notoSansTc = Noto_Sans_TC({
+  subsets: ["latin"],
+  variable: "--font-noto-sans-tc",
+})
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
 })
 
 export default async function RootLayout({
@@ -67,15 +78,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  // Client attribution for Sensorium: proxy.ts can't see the exported
-  // request span on Vercel (it runs in the Edge sandbox, isolated from the
-  // Node.js OTel context instrumentation.ts registers — see
-  // lib/otel/attribution.ts's docstring for the fixed attribute-key
-  // contract). Root layout runs as a Node.js Server Component, so
-  // `trace.getActiveSpan()` here is the same span Sensorium receives.
+  // Client attribution for Sensorium (see lib/otel/attribution.ts's
+  // docstring for the fixed attribute-key contract). Root layout runs as a
+  // Node.js Server Component, so `trace.getActiveSpan()` here is the same
+  // span Sensorium receives.
   // Do NOT hoist `await headers()` into a variable. The optional chaining below
-  // short-circuits when there is no active span — which is the case during
-  // prerendering — so `headers()` is never evaluated at build time and the
+  // short-circuits when there is no active span, which is the case during
+  // prerendering, so `headers()` is never evaluated at build time and the
   // marketing routes stay statically prerendered. Reading a request header
   // unconditionally here turns / and /_not-found into ƒ (Dynamic).
   trace
@@ -86,17 +95,16 @@ export default async function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${fontMono.variable} font-mono antialiased`}
+      className={cn(
+        "antialiased",
+        inter.variable,
+        notoSansJp.variable,
+        notoSansTc.variable,
+        jetbrainsMono.variable
+      )}
     >
       <body>
-        <ThemeProvider>
-          <TooltipProvider>
-            <Header />
-            <PageTransition>{children}</PageTransition>
-            <Uptime />
-            <Footer />
-          </TooltipProvider>
-        </ThemeProvider>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   )

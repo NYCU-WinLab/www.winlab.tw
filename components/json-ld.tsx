@@ -2,7 +2,7 @@ export function JsonLd() {
   const data = {
     "@context": "https://schema.org",
     "@type": "ResearchOrganization",
-    name: "WinLab — Wireless Internet Laboratory",
+    name: "WinLab: Wireless Internet Laboratory",
     url: "https://www.winlab.tw",
     description:
       "A systems lab at NYCU focused on 5G/6G infrastructure, cloud-native platforms, and AI-powered network automation.",
@@ -40,7 +40,7 @@ export function JsonLd() {
     },
   }
 
-  // static hardcoded data — safe to inject directly
+  // static hardcoded data, safe to inject directly
   return (
     <script
       type="application/ld+json"

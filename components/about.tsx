@@ -1,82 +1,40 @@
-"use client"
-
 import Image from "next/image"
-import * as m from "motion/react-m"
 
-import { useInView } from "@/hooks/use-in-view"
+import { Focus, FocusLabel, FocusMeta, FocusTitle } from "@/components/focus"
 
-const spring = { type: "spring" as const, stiffness: 200, damping: 20 }
-
+// The page's one loud thing: who we are, in a line.
 export function About() {
-  const { ref, inView } = useInView()
-
   return (
-    <section
-      ref={ref as React.RefObject<HTMLElement>}
-      className="flex h-dvh flex-col items-center justify-center gap-8 px-6 text-center"
-    >
-      <m.h1
-        initial={{ opacity: 0, y: 16 }}
-        animate={inView ? { opacity: 1, y: 0 } : {}}
-        transition={{ ...spring, delay: 0 }}
-        className="text-sm font-normal tracking-widest text-muted-foreground uppercase"
-      >
-        Wireless Internet Laboratory
-      </m.h1>
-      <m.h2
-        initial={{ opacity: 0, y: 16 }}
-        animate={inView ? { opacity: 1, y: 0 } : {}}
-        transition={{ ...spring, delay: 0.1 }}
-        className="text-3xl font-medium"
-      >
-        We deploy on Fridays.
-      </m.h2>
-      <m.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={inView ? { opacity: 1, scale: 1 } : {}}
-        transition={{ ...spring, delay: 0.2 }}
-      >
-        <Image
-          src="/this-is-fine.webp"
-          alt="This is fine"
-          width={320}
-          height={180}
-          className="w-full max-w-xs rounded-lg sm:max-w-sm"
-        />
-      </m.div>
-      <m.p
-        initial={{ opacity: 0, y: 16 }}
-        animate={inView ? { opacity: 1, y: 0 } : {}}
-        transition={{ ...spring, delay: 0.3 }}
-        className="text-sm tracking-wide text-muted-foreground"
-      >
-        5G/6G · Cloud-Native · AI Agents
-      </m.p>
-      <m.p
-        initial={{ opacity: 0, y: 16 }}
-        animate={inView ? { opacity: 1, y: 0 } : {}}
-        transition={{ ...spring, delay: 0.4 }}
-        className="text-center text-base text-muted-foreground"
-      >
+    <Focus className="items-center pb-24 text-center">
+      <FocusLabel>Wireless Internet Laboratory</FocusLabel>
+      <FocusTitle>We deploy on Fridays.</FocusTitle>
+      <Image
+        src="/this-is-fine.webp"
+        alt="This is fine"
+        width={320}
+        height={180}
+        className="w-full max-w-xs rounded-control sm:max-w-sm"
+      />
+      <FocusMeta className="justify-center">
+        <span>5G/6G</span>
+        <span>Cloud-Native</span>
+        <span>AI Agents</span>
+      </FocusMeta>
+      <p className="text-muted-foreground">
         A systems lab that builds things that actually work.
-      </m.p>
-      <m.p
-        initial={{ opacity: 0, y: 16 }}
-        animate={inView ? { opacity: 1, y: 0 } : {}}
-        transition={{ ...spring, delay: 0.5 }}
-        className="text-center text-sm text-muted-foreground"
-      >
+      </p>
+      <p className="text-muted-foreground">
         P.S. We also run NYCU&apos;s{" "}
         <a
           href="https://ai.winlab.tw"
           target="_blank"
           rel="noopener noreferrer"
-          className="underline underline-offset-4 transition-colors hover:text-foreground"
+          className="underline underline-offset-4 transition-colors duration-state hover:text-foreground"
         >
-          Office of AI Affairs · 人工智慧專責辦公室
+          Office of AI Affairs, 人工智慧專責辦公室
         </a>
         .
-      </m.p>
-    </section>
+      </p>
+    </Focus>
   )
 }
