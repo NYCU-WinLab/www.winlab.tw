@@ -16,7 +16,7 @@ Add components from the WinLab registry: `bunx shadcn@latest add @winlab/<name> 
 
 ## Architecture
 
-Single-page lab website: Hero → About → Research → Professor → Members → Find the Lab. Nothing else: member tools live on portal.winlab.tw.
+Single-page lab website: Hero → Professor → Research → Members → Find the Lab. Nothing else: member tools live on portal.winlab.tw.
 
 ### Three-layer data pattern
 
@@ -49,7 +49,7 @@ The site has no sign-in and no runtime secrets beyond the Keycloak admin client 
 
 ### Design
 
-The site follows ui.winlab.tw (its DESIGN.md is the rulebook): `app-shell` corners (breadcrumb top left, Portal top right, build commit bottom left, © bottom right), `text-title` and `text-body` only, no cards, `section` blocks with a divider. About is the page's one `focus`; lists arrive with `stagger-rise`. The hero bleeds out of the shell's padding to fill the first screen. `tokens:check` exempts `components/hero.tsx` (canvas colors) and `app/opengraph-image.tsx` (next/og needs inline styles).
+The site follows ui.winlab.tw (its DESIGN.md is the rulebook): `app-shell` corners (breadcrumb top left, Portal top right, build commit bottom left, © bottom right), `text-title` and `text-body` only, no cards. Professor, Research and Find the Lab are centered (`components/centered-section.tsx`); Members uses the `section` block and shows the 4 newest classes, the rest behind "…". There is no `focus`: the hero is the loud part. Lists arrive with `stagger-rise`. The hero bleeds out of the shell's padding to fill the first screen. `tokens:check` exempts `components/hero.tsx` (canvas colors) and `app/opengraph-image.tsx` (next/og needs inline styles).
 
 ### Map embed
 
