@@ -53,7 +53,7 @@ The site follows ui.winlab.tw (its DESIGN.md is the rulebook): `app-shell` corne
 
 ### Map embed
 
-`components/find-us.tsx` mounts the Google Maps iframe only after the visitor clicks "Load interactive map". The embed costs about 450 KiB of script, more than the rest of the page.
+`components/find-us.tsx` mounts the Google Maps iframe only after the visitor clicks "Show map". The embed costs about 450 KiB of script, more than the rest of the page.
 
 ### Theming
 
