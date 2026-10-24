@@ -28,6 +28,22 @@ jobs:
 
       - run: bun install --frozen-lockfile
 
+      # Without these the build still passes with an empty member list (CI
+      # relies on that), and the health check would ship it. Stop here instead.
+      - name: Check Keycloak secrets
+        env:
+          KEYCLOAK_URL: ${{ secrets.KEYCLOAK_URL }}
+          KEYCLOAK_REALM: ${{ secrets.KEYCLOAK_REALM }}
+          KEYCLOAK_ADMIN_CLIENT_ID: ${{ secrets.KEYCLOAK_ADMIN_CLIENT_ID }}
+          KEYCLOAK_ADMIN_CLIENT_SECRET: ${{ secrets.KEYCLOAK_ADMIN_CLIENT_SECRET }}
+        run: |
+          for name in KEYCLOAK_URL KEYCLOAK_REALM KEYCLOAK_ADMIN_CLIENT_ID KEYCLOAK_ADMIN_CLIENT_SECRET; do
+            if [ -z "$(printenv "$name")" ]; then
+              echo "::error::repository secret $name is not set"
+              exit 1
+            fi
+          done
+
       # The home page is prerendered with the member list, so the build reads
       # Keycloak. app/page.tsx keeps the token out of the fetch cache.
       - name: Build
