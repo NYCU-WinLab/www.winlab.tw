@@ -7,7 +7,7 @@ function LoginForm() {
   const searchParams = useSearchParams()
   const next = searchParams.get("next") ?? "/directory"
   const error = searchParams.get("error")
-  const loginHref = `/api/auth/login?next=${encodeURIComponent(next)}`
+  const loginHref = `/sign-in?next=${encodeURIComponent(next)}`
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center gap-6 px-6">

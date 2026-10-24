@@ -1,6 +1,7 @@
 import { getDirectoryMembers } from "@/lib/services/users"
 import { MemberTable } from "@/components/directory/member-table"
-import { createClient } from "@/lib/supabase/server"
+import { headers } from "next/headers"
+import { getMember } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
@@ -12,20 +13,9 @@ export const metadata = {
 }
 
 export default async function DirectoryPage() {
-  let user = null
+  const session = await getMember(await headers())
 
-  try {
-    const supabase = await createClient()
-    const {
-      data: { user: currentUser },
-    } = await supabase.auth.getUser()
-
-    user = currentUser
-  } catch {
-    user = null
-  }
-
-  if (!user) {
+  if (!session) {
     return (
       <main className="mx-auto flex min-h-[calc(100dvh-5rem)] max-w-5xl items-center px-4 py-20 sm:px-6">
         <section className="w-full rounded-3xl border border-border/60 bg-muted/20 p-8 text-center sm:p-10">

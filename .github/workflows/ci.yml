@@ -32,9 +32,9 @@ jobs:
 
       - run: bun run typecheck
 
-      # No secrets needed: Keycloak and Supabase are read at request time, and
-      # lib/supabase/config.ts degrades gracefully when the env is absent, so
-      # the production build completes without any environment configured.
+      # No secrets needed: sign-in is read at request time and lib/auth.ts
+      # degrades to a locked /directory when the env is absent, so the
+      # production build completes without any environment configured.
       - run: bun run build
 
       # The /directory CSP allow-lists next-themes' inline script by hash.
