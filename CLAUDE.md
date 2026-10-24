@@ -49,11 +49,11 @@ The site has no sign-in and no runtime secrets beyond the Keycloak admin client 
 
 ### Design
 
-The site follows ui.winlab.tw (its DESIGN.md is the rulebook): `app-shell` corners (breadcrumb top left, Members and Portal top right, build commit bottom left, © bottom right), `text-title` and `text-body` only, no cards, `section` blocks with a divider. About is the page's one `focus`; lists arrive with `stagger-rise`. The hero bleeds out of the shell's padding to fill the first screen. `tokens:check` exempts `components/hero.tsx` (canvas colors) and `app/opengraph-image.tsx` (next/og needs inline styles).
+The site follows ui.winlab.tw (its DESIGN.md is the rulebook): `app-shell` corners (breadcrumb top left, Portal top right, build commit bottom left, © bottom right), `text-title` and `text-body` only, no cards, `section` blocks with a divider. About is the page's one `focus`; lists arrive with `stagger-rise`. The hero bleeds out of the shell's padding to fill the first screen. `tokens:check` exempts `components/hero.tsx` (canvas colors) and `app/opengraph-image.tsx` (next/og needs inline styles).
 
 ### Map embed
 
-`components/find-us.tsx` mounts the Google Maps iframe only after the visitor clicks "Show map". The embed costs about 450 KiB of script, more than the rest of the page.
+`components/find-us.tsx` shows the Google Maps iframe with `loading="lazy"`: its script (about 450 KiB, more than the rest of the page) loads only when the map nears the viewport.
 
 ### Theming
 

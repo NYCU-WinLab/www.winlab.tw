@@ -62,16 +62,9 @@ export default async function Page() {
         { label: "WinLab", href: "/", tip: "Wireless Internet Laboratory" },
       ]}
       actions={
-        <>
-          <CornerTip tip="Member directory, for lab members" corner="top-right">
-            <CornerLink href="https://portal.winlab.tw/members">
-              Members ↗
-            </CornerLink>
-          </CornerTip>
-          <CornerTip tip="Lab services, for lab members" corner="top-right">
-            <CornerLink href="https://portal.winlab.tw">Portal ↗</CornerLink>
-          </CornerTip>
-        </>
+        <CornerTip tip="Lab services, for lab members" corner="top-right">
+          <CornerLink href="https://portal.winlab.tw">Portal ↗</CornerLink>
+        </CornerTip>
       }
     >
       {/* Organisation schema belongs on the landing page, not on every
