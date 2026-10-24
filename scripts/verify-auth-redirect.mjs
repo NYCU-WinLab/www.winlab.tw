@@ -1,5 +1,5 @@
 const siteUrl = process.env.SITE_URL || "https://www.winlab.tw"
-const loginPath = "/api/auth/login?next=%2Fdirectory"
+const signInPath = "/sign-in?next=%2Fdirectory"
 
 function assert(condition, message) {
   if (!condition) {
@@ -7,49 +7,34 @@ function assert(condition, message) {
   }
 }
 
-async function fetchRedirect(url) {
-  const response = await fetch(url, {
+async function main() {
+  const response = await fetch(`${siteUrl}${signInPath}`, {
     method: "GET",
     redirect: "manual",
   })
-
-  return {
-    status: response.status,
-    location: response.headers.get("location"),
-  }
-}
-
-async function main() {
-  const first = await fetchRedirect(`${siteUrl}${loginPath}`)
-  console.log("login route:", first)
+  const location = response.headers.get("location")
+  console.log("sign-in route:", { status: response.status, location })
 
   assert(
-    first.status >= 300 && first.status < 400,
-    `Expected /api/auth/login to redirect, got ${first.status}`
+    response.status >= 300 && response.status < 400,
+    `Expected /sign-in to redirect, got ${response.status}`
   )
-  assert(first.location, "Missing redirect location from /api/auth/login")
+  assert(location, "Missing redirect location from /sign-in")
   assert(
-    first.location.includes("/auth/v1/authorize"),
-    `Expected Supabase authorize URL, got ${first.location}`
-  )
-  assert(
-    first.location.includes(
-      encodeURIComponent(`${siteUrl}/api/auth/callback?next=%2Fdirectory`)
+    location.startsWith(
+      "https://auth.winlab.tw/realms/winlab/protocol/openid-connect/auth"
     ),
-    `Expected callback URL in authorize redirect, got ${first.location}`
+    `Expected Keycloak authorize URL, got ${location}`
   )
-
-  const second = await fetchRedirect(first.location)
-  console.log("supabase authorize:", second)
-
   assert(
-    second.status >= 300 && second.status < 400,
-    `Expected Supabase authorize URL to redirect, got ${second.status}`
+    location.includes(
+      encodeURIComponent(`${siteUrl}/api/auth/callback/keycloak`)
+    ),
+    `Expected callback URL in authorize redirect, got ${location}`
   )
-  assert(second.location, "Missing redirect location from Supabase authorize")
   assert(
-    second.location.startsWith("https://auth.winlab.tw/realms/winlab/"),
-    `Expected Keycloak realm redirect, got ${second.location}`
+    location.includes("code_challenge_method=S256"),
+    `Expected PKCE in authorize redirect, got ${location}`
   )
 
   console.log("Auth redirect verification passed.")

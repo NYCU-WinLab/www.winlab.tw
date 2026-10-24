@@ -1,8 +1,8 @@
-import { createServerClient } from "@supabase/ssr"
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
-import { hasSupabaseConfig, requireSupabaseConfig } from "@/lib/supabase/config"
+import { getSessionCookie } from "better-auth/cookies"
 import { buildCsp } from "@/lib/csp.mjs"
+import { publicOrigin } from "@/lib/origin"
 
 export async function proxy(request: NextRequest) {
   // /directory is the only route that renders PII, and it is already
@@ -29,33 +29,10 @@ export async function proxy(request: NextRequest) {
   })
   response.headers.set("Content-Security-Policy", csp)
 
-  // No Supabase configured (e.g. local dev without env) — let request through
-  if (!hasSupabaseConfig()) {
-    return response
-  }
-
-  const { url, key } = requireSupabaseConfig()
-
-  const supabase = createServerClient(url, key, {
-    cookieOptions: { name: "www" },
-    cookies: {
-      getAll() {
-        return request.cookies.getAll()
-      },
-      setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value, options }) =>
-          response.cookies.set(name, value, options)
-        )
-      },
-    },
-  })
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    const loginUrl = new URL("/login", request.url)
+  // A fast first gate: no session cookie, straight to /login. The page still
+  // checks the session itself; a cookie alone proves nothing.
+  if (!getSessionCookie(request, { cookiePrefix: "www" })) {
+    const loginUrl = new URL("/login", publicOrigin(request))
     loginUrl.searchParams.set("next", request.nextUrl.pathname)
     return NextResponse.redirect(loginUrl)
   }

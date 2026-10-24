@@ -18,7 +18,7 @@ Add shadcn components: `bunx shadcn@latest add <component>`
 
 Single-page lab website: Hero → About → Research → Professor → Members → Find the Lab.
 
-### Three-layer data pattern (Supabase UI style)
+### Three-layer data pattern
 
 ```
 lib/services/   → business logic, Keycloak queries (no React)
@@ -33,6 +33,15 @@ Data flow for Members: `Keycloak → lib/keycloak.ts → lib/services/users.ts (
 - Gravatar existence is resolved server-side in `lib/services/users.ts` (one HEAD per email, memoised 24h). `gravatarUrl` is only set when an image exists, so the browser never fires a known-404 request and the email MD5 is never exposed for members without an avatar.
 - `/api/users` serves the same `PublicUser` projection for any external consumer. Nothing in this app fetches it any more.
 - CI builds without Keycloak env: `hasKeycloakConfig()` short-circuits to an empty list so the build still passes.
+
+### Directory sign-in
+
+`/directory` is the only page behind sign-in. `lib/auth.ts` runs Better Auth in stateless mode: no database, the session is an encrypted cookie (prefix `www`, 7 days). Keycloak (`auth.winlab.tw`, realm `winlab`, client `www`) is the only provider.
+
+- `/login` links to `app/sign-in/route.ts`, which redirects to Keycloak. Keycloak returns to `/api/auth/callback/keycloak`.
+- `proxy.ts` only checks that the cookie exists. `app/directory/page.tsx` verifies the session.
+- Without `KEYCLOAK_ISSUER`, `KEYCLOAK_CLIENT_ID`, `KEYCLOAK_CLIENT_SECRET` and `BETTER_AUTH_SECRET`, `/directory` stays locked.
+- `bun run verify:auth` checks the production redirect chain.
 
 ### Research section
 
