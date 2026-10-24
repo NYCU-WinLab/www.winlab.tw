@@ -32,6 +32,8 @@ const baseSecurityHeaders = [
 ]
 
 const nextConfig = {
+  // Self-hosted on Carrel: `node server.js` from .next/standalone.
+  output: "standalone",
   images: {
     // Nothing currently renders a gravatar through next/image — avatars are
     // radix <img> tags — so this only pre-authorises a future switch. It is not
@@ -39,6 +41,18 @@ const nextConfig = {
     remotePatterns: [
       { hostname: "gravatar.com" },
     ],
+  },
+  // winlab.tw (apex) points at the same machine; send it to www.
+  // 307 like Vercel did, so a rollback is not stuck in browser caches.
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "winlab.tw" }],
+        destination: "https://www.winlab.tw/:path*",
+        permanent: false,
+      },
+    ]
   },
   async headers() {
     return [

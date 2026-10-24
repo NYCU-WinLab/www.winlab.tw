@@ -60,7 +60,7 @@ export function requireSupabaseConfig() {
 
   if (!config) {
     throw new Error(
-      "Missing Supabase auth config: set SUPABASE_URL and SUPABASE_ANON_KEY in Vercel runtime env"
+      "Missing Supabase auth config: set SUPABASE_URL and SUPABASE_ANON_KEY in the runtime env"
     )
   }
 
