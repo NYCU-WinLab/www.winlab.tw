@@ -1,0 +1,68 @@
+name: carrel
+
+# Builds a Next.js standalone server and ships it to the Carrel machine `www`
+# (tenant winfra). carrel-deployd on the machine switches the release and
+# rolls back if http://127.0.0.1:3000/ is unhealthy. Runtime secrets live in
+# /srv/apps/www/env on the machine.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: carrel-${{ github.ref }}
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun install --frozen-lockfile
+
+      # Without these the build still passes with an empty member list (CI
+      # relies on that), and the health check would ship it. Stop here instead.
+      - name: Check Keycloak secrets
+        env:
+          KEYCLOAK_URL: ${{ secrets.KEYCLOAK_URL }}
+          KEYCLOAK_REALM: ${{ secrets.KEYCLOAK_REALM }}
+          KEYCLOAK_ADMIN_CLIENT_ID: ${{ secrets.KEYCLOAK_ADMIN_CLIENT_ID }}
+          KEYCLOAK_ADMIN_CLIENT_SECRET: ${{ secrets.KEYCLOAK_ADMIN_CLIENT_SECRET }}
+        run: |
+          for name in KEYCLOAK_URL KEYCLOAK_REALM KEYCLOAK_ADMIN_CLIENT_ID KEYCLOAK_ADMIN_CLIENT_SECRET; do
+            if [ -z "$(printenv "$name")" ]; then
+              echo "::error::repository secret $name is not set"
+              exit 1
+            fi
+          done
+
+      # The home page is prerendered with the member list, so the build reads
+      # Keycloak. app/page.tsx keeps the token out of the fetch cache.
+      - name: Build
+        env:
+          KEYCLOAK_URL: ${{ secrets.KEYCLOAK_URL }}
+          KEYCLOAK_REALM: ${{ secrets.KEYCLOAK_REALM }}
+          KEYCLOAK_ADMIN_CLIENT_ID: ${{ secrets.KEYCLOAK_ADMIN_CLIENT_ID }}
+          KEYCLOAK_ADMIN_CLIENT_SECRET: ${{ secrets.KEYCLOAK_ADMIN_CLIENT_SECRET }}
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: bun run build
+
+      - name: Pack
+        run: |
+          cp -r .next/static .next/standalone/.next/static
+          cp -r public/. .next/standalone/public/
+          tar czf "$RUNNER_TEMP/www.tar.gz" -C .next/standalone .
+
+      - uses: NYCU-WinLab/carrel-deploy@v1
+        with:
+          tenant: winfra
+          app: www
+          artifact: ${{ runner.temp }}/www.tar.gz

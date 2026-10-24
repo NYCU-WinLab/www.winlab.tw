@@ -71,3 +71,12 @@ Header, footer and uptime use the CSS `animate-fade-in` class from `globals.css`
 ## Environment
 
 Requires `.env.local` — see `.env.example`. Keycloak client needs `client_credentials` grant with `view-users` role.
+
+## Deploy
+
+Runs on the Carrel machine `www` (tenant `winfra`) as a Next.js standalone server (`node server.js`, port 3000). `winlab.tw` points at the same machine and `next.config.mjs` redirects it to `www.winlab.tw`.
+
+- Every push to `main` runs `.github/workflows/carrel.yml`: it builds with the Keycloak repo secrets (the home page is prerendered with members), packs `.next/standalone` and ships it with `NYCU-WinLab/carrel-deploy`.
+- `carrel-deployd` on the machine switches the release and rolls back if `http://127.0.0.1:3000/` is unhealthy. Roll back by hand with the Carrel `app_rollback` tool.
+- Runtime secrets live in `/srv/apps/www/env` on the machine.
+- `request.url` holds the bind address behind the gateway, so absolute redirects use `publicOrigin()` from `lib/origin.ts`.

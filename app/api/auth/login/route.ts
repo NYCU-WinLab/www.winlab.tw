@@ -1,10 +1,11 @@
 import { createClient } from "@/lib/supabase/server"
 import { hasSupabaseConfig } from "@/lib/supabase/config"
 import { NextResponse } from "next/server"
+import { publicOrigin } from "@/lib/origin"
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
-  const origin = requestUrl.origin
+  const origin = publicOrigin(request)
   const rawNext = requestUrl.searchParams.get("next") ?? "/directory"
   const next =
     rawNext.startsWith("/") && !rawNext.startsWith("//")
