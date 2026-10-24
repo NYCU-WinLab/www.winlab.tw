@@ -32,12 +32,7 @@ jobs:
 
       - run: bun run typecheck
 
-      # No secrets needed: sign-in is read at request time and lib/auth.ts
-      # degrades to a locked /directory when the env is absent, so the
-      # production build completes without any environment configured.
+      # No secrets needed: without Keycloak env the home page builds with an
+      # empty member list.
       - run: bun run build
 
-      # The /directory CSP allow-lists next-themes' inline script by hash.
-      # This fails the build if that script drifts, rather than letting the
-      # stale hash reach production as a light-mode flash on /directory.
-      - run: bun run verify:csp-hash

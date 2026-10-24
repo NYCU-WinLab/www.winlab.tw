@@ -57,9 +57,7 @@ export default async function Page() {
   return (
     <main>
       {/* Organisation schema belongs on the landing page, not on every
-          route — /directory is noindex, and keeping this out of the root
-          layout means its inline <script> never has to satisfy the stricter
-          nonce CSP that proxy.ts applies there. */}
+          route. */}
       <JsonLd />
 
       <Hero />

@@ -16,7 +16,7 @@ Add shadcn components: `bunx shadcn@latest add <component>`
 
 ## Architecture
 
-Single-page lab website: Hero → About → Research → Professor → Members → Find the Lab.
+Single-page lab website: Hero → About → Research → Professor → Members → Find the Lab. Nothing else: member tools live on portal.winlab.tw.
 
 ### Three-layer data pattern
 
@@ -31,17 +31,11 @@ Data flow for Members: `Keycloak → lib/keycloak.ts → lib/services/users.ts (
 
 - `app/page.tsx` is `force-static` with `revalidate = 3600` (ISR). Members are in the SSR HTML; the page regenerates in the background at most once an hour. `force-static` is required because the Keycloak admin client sends an Authorization header, which Next would otherwise treat as a dynamic signal.
 - Gravatar existence is resolved server-side in `lib/services/users.ts` (one HEAD per email, memoised 24h). `gravatarUrl` is only set when an image exists, so the browser never fires a known-404 request and the email MD5 is never exposed for members without an avatar.
-- `/api/users` serves the same `PublicUser` projection for any external consumer. Nothing in this app fetches it any more.
 - CI builds without Keycloak env: `hasKeycloakConfig()` short-circuits to an empty list so the build still passes.
 
-### Directory sign-in
+### No sign-in
 
-`/directory` is the only page behind sign-in. `lib/auth.ts` runs Better Auth in stateless mode: no database, the session is an encrypted cookie (prefix `www`, 7 days). Keycloak (`auth.winlab.tw`, realm `winlab`, client `www`) is the only provider.
-
-- `/login` links to `app/sign-in/route.ts`, which redirects to Keycloak. Keycloak returns to `/api/auth/callback/keycloak`.
-- `proxy.ts` only checks that the cookie exists. `app/directory/page.tsx` calls `getMember()`: it verifies the session, then asks Keycloak whether the account is still enabled.
-- Without `KEYCLOAK_ISSUER`, `KEYCLOAK_CLIENT_ID`, `KEYCLOAK_CLIENT_SECRET` and `BETTER_AUTH_SECRET`, `/directory` stays locked.
-- `bun run verify:auth` checks the production redirect chain.
+The site has no sign-in and no runtime secrets beyond the Keycloak admin client the home page reads. The member directory lives on the portal (`portal.winlab.tw/members`); `next.config.mjs` sends `/directory` and `/login` there with a 308.
 
 ### Research section
 

@@ -37,10 +37,11 @@ export function Header() {
           <TooltipTrigger asChild>
             <div className="animate-fade-in">
               <Link
-                href="/directory"
+                href="https://portal.winlab.tw/members"
+                target="_blank"
                 className="group flex items-center text-xs text-muted-foreground transition-colors hover:text-foreground"
               >
-                directory
+                members
                 <span className="ml-0.5 inline-block opacity-0 transition-all duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100">
                   ↗
                 </span>
@@ -48,7 +49,7 @@ export function Header() {
             </div>
           </TooltipTrigger>
           <TooltipContent side="bottom" align="end">
-            Lab member directory
+            Member directory on the portal
           </TooltipContent>
         </Tooltip>
 

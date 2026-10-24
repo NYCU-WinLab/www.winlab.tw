@@ -14,8 +14,7 @@ export async function getKeycloakAdmin() {
       realmName: process.env.KEYCLOAK_REALM!,
       // Never let Next's data cache hold the token response or the admin user
       // dump, whichever segment these calls run under. app/page.tsx also sets
-      // fetchCache = "force-no-store"; this covers the route handlers and
-      // /directory as well.
+      // fetchCache = "force-no-store" too.
       requestOptions: { cache: "no-store" },
     })
 

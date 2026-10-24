@@ -9,9 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
-    "typecheck": "tsc --noEmit",
-    "verify:auth": "node scripts/verify-auth-redirect.mjs",
-    "verify:csp-hash": "node scripts/verify-csp-hash.mjs"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@keycloak/keycloak-admin-client": "^26.5.7",
@@ -20,7 +18,6 @@
     "@opentelemetry/exporter-logs-otlp-http": "^0.220.0",
     "@opentelemetry/sdk-logs": "^0.220.0",
     "@vercel/otel": "^2.1.3",
-    "better-auth": "^1.7.12",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.7.0",
