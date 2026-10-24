@@ -77,7 +77,7 @@ export default async function RootLayout({
   // short-circuits when there is no active span — which is the case during
   // prerendering — so `headers()` is never evaluated at build time and the
   // marketing routes stay statically prerendered. Reading a request header
-  // unconditionally here turns /, /login and /_not-found into ƒ (Dynamic).
+  // unconditionally here turns / and /_not-found into ƒ (Dynamic).
   trace
     .getActiveSpan()
     ?.setAttributes(getClientAttributionAttributes(await headers()))

@@ -47,13 +47,14 @@ export function Members({
           className="mt-10 flex justify-center"
         >
           <Link
-            href="/directory"
+            href="https://portal.winlab.tw/members"
+            target="_blank"
             className="group flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
           >
             <span className="transition-transform duration-150 group-hover:translate-x-0.5">
               →
             </span>
-            <span>full directory</span>
+            <span>all members</span>
           </Link>
         </m.div>
       )}
