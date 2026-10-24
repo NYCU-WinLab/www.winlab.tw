@@ -1,4 +1,4 @@
-import { auth, getSession, hasAuthConfig } from "@/lib/auth"
+import { auth, getMember, hasAuthConfig } from "@/lib/auth"
 import { publicOrigin } from "@/lib/origin"
 import { safeNext } from "@/lib/safe-next"
 
@@ -14,7 +14,7 @@ export async function GET(request: Request) {
     )
   }
 
-  if (await getSession(request.headers)) {
+  if (await getMember(request.headers)) {
     return Response.redirect(`${origin}${next}`, 303)
   }
 
