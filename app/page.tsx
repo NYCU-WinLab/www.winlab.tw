@@ -1,4 +1,3 @@
-import { About } from "@/components/about"
 import { AppShell, CornerLink, CornerTip } from "@/components/app-shell"
 import { FindUs } from "@/components/find-us"
 import { Hero } from "@/components/hero"
@@ -72,9 +71,8 @@ export default async function Page() {
       <JsonLd />
       <Hero />
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-24 py-24">
-        <About />
-        <Research />
         <Professor />
+        <Research />
         <Members users={users} error={error} />
         <FindUs />
       </div>

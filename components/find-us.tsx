@@ -1,5 +1,5 @@
 import { ExternalLink } from "lucide-react"
-import { Section } from "@/components/section"
+import { CenteredSection } from "@/components/centered-section"
 import { buttonVariants } from "@/components/ui/button"
 
 const LAT = 24.7869837
@@ -12,7 +12,7 @@ const MAPS_LINK = `https://www.google.com/maps/search/?api=1&query=${LAT},${LNG}
 
 export function FindUs() {
   return (
-    <Section id="find-us" title="Find the Lab">
+    <CenteredSection id="find-us" title="Find the Lab">
       <div className="flex flex-col gap-1">
         <p>Engineering Building C, Room 638. 6F, right, then right again.</p>
         <p className="text-muted-foreground">
@@ -22,7 +22,7 @@ export function FindUs() {
           National Yang Ming Chiao Tung University
         </p>
       </div>
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap justify-center gap-3">
         <a
           href={MAPS_LINK}
           target="_blank"
@@ -43,6 +43,6 @@ export function FindUs() {
         referrerPolicy="no-referrer-when-downgrade"
         className="h-80 w-full rounded-control border-0 grayscale dark:hue-rotate-180 dark:invert"
       />
-    </Section>
+    </CenteredSection>
   )
 }

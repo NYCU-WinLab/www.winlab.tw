@@ -1,4 +1,4 @@
-import { Section } from "@/components/section"
+import { CenteredSection } from "@/components/centered-section"
 
 // Sourced from Prof. Tseng's research interests and project list
 // (https://sites.google.com/view/cctseng). Keep json-ld.tsx's knowsAbout in
@@ -38,8 +38,8 @@ export const RESEARCH_AREAS = [
 
 export function Research() {
   return (
-    <Section id="research" title="Research">
-      <ul className="grid stagger-rise gap-x-12 sm:grid-cols-2">
+    <CenteredSection id="research" title="Research">
+      <ul className="grid w-full stagger-rise gap-x-12 sm:grid-cols-2">
         {RESEARCH_AREAS.map((area) => (
           <li
             key={area.title}
@@ -50,6 +50,6 @@ export function Research() {
           </li>
         ))}
       </ul>
-    </Section>
+    </CenteredSection>
   )
 }
