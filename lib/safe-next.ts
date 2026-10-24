@@ -12,7 +12,11 @@ export function safeNext(raw: string | null): string {
   }
   try {
     const url = new URL(raw, SITE_ORIGIN)
-    if (url.origin !== SITE_ORIGIN) return fallback
+    // `/.//evil.com` stays on-site here but normalises to `//evil.com`,
+    // which a browser reads as another host.
+    if (url.origin !== SITE_ORIGIN || url.pathname.startsWith("//")) {
+      return fallback
+    }
     return `${url.pathname}${url.search}${url.hash}`
   } catch {
     return fallback
