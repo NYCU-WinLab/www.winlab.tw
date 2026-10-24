@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth"
 import { nextCookies } from "better-auth/next-js"
 import { genericOAuth } from "better-auth/plugins"
 import { SITE_ORIGIN } from "@/lib/csp.mjs"
+import { getKeycloakAdmin } from "@/lib/keycloak"
 
 /**
  * Sign-in for /directory: Keycloak (auth.winlab.tw, realm winlab) is the only
@@ -9,7 +10,8 @@ import { SITE_ORIGIN } from "@/lib/csp.mjs"
  * (Better Auth's stateless mode), so signing in stores nothing on the server.
  * It lasts 7 days and is not refreshed: /directory is a server component and
  * cannot rewrite cookies, and Keycloak's own session makes signing in again
- * one click.
+ * one click. A cookie cannot be revoked, so getMember() also asks Keycloak
+ * on every visit whether the account is still enabled.
  */
 
 const issuer = process.env.KEYCLOAK_ISSUER
@@ -38,16 +40,27 @@ export const auth = betterAuth({
       ? "build-time-placeholder-never-used-to-sign"
       : undefined),
   emailAndPassword: { enabled: false },
+  disabledPaths: ["/update-user", "/change-email"],
   session: {
     expiresIn: 7 * 24 * 60 * 60,
     cookieCache: {
       enabled: true,
       maxAge: 7 * 24 * 60 * 60,
       strategy: "jwe",
+      // Stateless mode turns this on by default; see the comment above.
+      refreshCache: false,
     },
   },
   account: { storeStateStrategy: "cookie", storeAccountCookie: true },
   advanced: { cookiePrefix: "www" },
+  user: {
+    additionalFields: {
+      // Keycloak `sub`: the account getMember() checks on every visit.
+      // Not input: false, which also drops it from the mapped profile;
+      // /update-user is disabled instead so a member cannot rewrite it.
+      keycloakId: { type: "string", required: false },
+    },
+  },
   plugins: [
     genericOAuth({
       config: hasAuthConfig()
@@ -61,6 +74,10 @@ export const auth = betterAuth({
               scopes: ["openid"],
               pkce: true,
               requireIdTokenVerification: true,
+              mapProfileToUser: (profile) => ({
+                keycloakId: String(profile.sub ?? profile.id ?? ""),
+              }),
+              overrideUserInfo: true,
             },
           ]
         : [],
@@ -74,6 +91,26 @@ export async function getSession(headers: Headers) {
   if (!hasAuthConfig()) return null
   try {
     return await auth.api.getSession({ headers })
+  } catch {
+    return null
+  }
+}
+
+/**
+ * The signed-in member whose Keycloak account is still enabled, or null.
+ * Use this, not getSession(), in front of member data.
+ */
+export async function getMember(headers: Headers) {
+  const session = await getSession(headers)
+  const id = (session?.user as { keycloakId?: string } | undefined)?.keycloakId
+  if (!session || !id) return null
+  try {
+    const kc = await getKeycloakAdmin()
+    const user = await kc.users.findOne({
+      realm: process.env.KEYCLOAK_REALM!,
+      id,
+    })
+    return user?.enabled ? session : null
   } catch {
     return null
   }

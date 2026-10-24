@@ -39,7 +39,7 @@ Data flow for Members: `Keycloak → lib/keycloak.ts → lib/services/users.ts (
 `/directory` is the only page behind sign-in. `lib/auth.ts` runs Better Auth in stateless mode: no database, the session is an encrypted cookie (prefix `www`, 7 days). Keycloak (`auth.winlab.tw`, realm `winlab`, client `www`) is the only provider.
 
 - `/login` links to `app/sign-in/route.ts`, which redirects to Keycloak. Keycloak returns to `/api/auth/callback/keycloak`.
-- `proxy.ts` only checks that the cookie exists. `app/directory/page.tsx` verifies the session.
+- `proxy.ts` only checks that the cookie exists. `app/directory/page.tsx` calls `getMember()`: it verifies the session, then asks Keycloak whether the account is still enabled.
 - Without `KEYCLOAK_ISSUER`, `KEYCLOAK_CLIENT_ID`, `KEYCLOAK_CLIENT_SECRET` and `BETTER_AUTH_SECRET`, `/directory` stays locked.
 - `bun run verify:auth` checks the production redirect chain.
 

@@ -1,7 +1,7 @@
 import { getDirectoryMembers } from "@/lib/services/users"
 import { MemberTable } from "@/components/directory/member-table"
 import { headers } from "next/headers"
-import { getSession } from "@/lib/auth"
+import { getMember } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
@@ -13,7 +13,7 @@ export const metadata = {
 }
 
 export default async function DirectoryPage() {
-  const session = await getSession(await headers())
+  const session = await getMember(await headers())
 
   if (!session) {
     return (
