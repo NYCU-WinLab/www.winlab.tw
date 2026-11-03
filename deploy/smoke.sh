@@ -25,4 +25,9 @@ for js in $(grep -o '/_next/static/[^"]*\.js' <<<"$page" | sort -u); do
   curl -sf "localhost:3000$js" | absent __BUILD_SHA__ "$js"
 done
 test "$(curl -s -o /dev/null -w '%{http_code}' localhost:3000/missing-page)" = 404
+# The build read Keycloak: the home page lists the members. A fork's pull
+# request builds without the secrets, so only a build that pushes checks.
+if [ "${PUSH:-}" = true ]; then
+  absent 'Member list is temporarily unavailable' / <<<"$page"
+fi
 echo "smoke passed"
