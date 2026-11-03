@@ -73,9 +73,10 @@ Requires `.env.local` — see `.env.example`. Keycloak client needs `client_cred
 
 ## Deploy
 
-Runs on the Carrel machine `www` (tenant `winfra`) as a Next.js standalone server (`node server.js`, port 3000). `winlab.tw` points at the same machine and `next.config.mjs` redirects it to `www.winlab.tw`.
+Runs on the Carrel machine `www` (tenant `winfra`) as a Docker image (`ghcr.io/nycu-winlab/www.winlab.tw`, port 3000) under Compose in `/opt/www`. `winlab.tw` points at the same machine and `next.config.mjs` redirects it to `www.winlab.tw`.
 
-- Every push to `main` runs `.github/workflows/carrel.yml`: it builds with the Keycloak repo secrets (the home page is prerendered with members), packs `.next/standalone` and ships it with `NYCU-WinLab/carrel-deploy`.
-- `carrel-deployd` on the machine switches the release and rolls back if `http://127.0.0.1:3000/` is unhealthy. Roll back by hand with the Carrel `app_rollback` tool.
-- Runtime secrets live in `/srv/apps/www/env` on the machine.
-- The build passes `NEXT_PUBLIC_BUILD_SHA`, `NEXT_PUBLIC_BUILD_TIME` and `NEXT_PUBLIC_BUILD_URL` for the bottom-left corner.
+- ci builds the image on every pull request through the shared workflows in `zyx1121/.github`, with the Keycloak repo secrets as build mounts (the home page is prerendered with members), and smoke-tests it with `deploy/smoke.sh`.
+- A push to `main` runs `.github/workflows/release.yml`: it retags the image ci passed and ships `deploy/carrel-start.sh` and `compose.yaml` with `NYCU-WinLab/carrel-deploy`.
+- `carrel-deployd` on the machine runs `deploy/carrel-start.sh` and rolls back if the container is unhealthy. Roll back by hand with the Carrel `app_rollback` tool. The unit needs `Type=notify` and `NotifyAccess=all`.
+- Runtime secrets live in `/srv/apps/www/env` on the machine; Compose reads it.
+- The image is built before the merge commit exists, so the bottom-left corner carries a placeholder that `deploy/entrypoint.sh` fills in from `WWW_VERSION` when the container starts.
